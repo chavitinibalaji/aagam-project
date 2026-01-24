@@ -1,0 +1,124 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Aashirvaad Atta",
+      "price": "185",
+      "mrp": "220",
+      "off": "₹35 OFF",
+      "weight": "5 kg",
+      "img": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
+      "cat": "grocery",
+      "stock": 50,
+      "description": "Premium quality whole wheat flour for soft and nutritious chapatis."
+    },
+    {
+      "id": 2,
+      "name": "Fortune Sunflower Oil",
+      "price": "120",
+      "mrp": "150",
+      "off": "₹30 OFF",
+      "weight": "1 L",
+      "img": "https://images.unsplash.com/photo-1625772299848-361b8037d1a9?w=800",
+      "cat": "grocery",
+      "stock": 30,
+      "description": "Light and healthy cooking oil rich in vitamins."
+    },
+    {
+      "id": 3,
+      "name": "Tata Salt",
+      "price": "22",
+      "weight": "1 kg",
+      "img": "https://images.unsplash.com/photo-1615477068639-4353b2d7d3c3?w=800",
+      "cat": "grocery",
+      "stock": 100,
+      "description": "Iodized salt for healthy cooking."
+    },
+    {
+      "id": 4,
+      "name": "Apple Shimla",
+      "price": "126",
+      "mrp": "221",
+      "off": "₹95 OFF",
+      "weight": "4 pcs",
+      "img": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=800",
+      "cat": "fruit",
+      "stock": 25,
+      "description": "Fresh and juicy Shimla apples, perfect for snacking."
+    },
+    {
+      "id": 5,
+      "name": "Banana Robusta",
+      "price": "28",
+      "mrp": "41",
+      "off": "₹13 OFF",
+      "weight": "6-7 pcs",
+      "img": "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=800",
+      "cat": "fruit",
+      "stock": 40,
+      "description": "Sweet and nutritious bananas, great for breakfast."
+    },
+    {
+      "id": 6,
+      "name": "Tomato Local",
+      "price": "25",
+      "mrp": "48",
+      "off": "₹23 OFF",
+      "weight": "500 g",
+      "img": "https://images.unsplash.com/photo-1592924357229-6d5a3a0e5a6d?w=800",
+      "cat": "veg",
+      "stock": 35,
+      "description": "Fresh local tomatoes, perfect for cooking."
+    },
+    {
+      "id": 7,
+      "name": "Nandini Fresh Milk",
+      "price": "24",
+      "weight": "500 ml",
+      "img": "https://images.unsplash.com/photo-1550581190-9e6a8d8d5b5d?w=800",
+      "cat": "dairy",
+      "stock": 60,
+      "description": "Fresh cow milk, pasteurized and homogenized."
+    },
+    {
+      "id": 8,
+      "name": "Lays Classic Salted",
+      "price": "20",
+      "weight": "52 g",
+      "img": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=800",
+      "cat": "snack",
+      "stock": 80,
+      "description": "Crispy potato chips with classic salted flavor."
+    },
+    {
+      "id": 9,
+      "name": "Nivea Soft Light Moisturiser",
+      "price": "199",
+      "weight": "200 ml",
+      "img": "https://images.unsplash.com/photo-1617890686219-509e1d7e5c2e?w=800",
+      "cat": "beauty",
+      "stock": 15,
+      "description": "Light and non-greasy moisturizer for all skin types."
+    },
+    {
+      "id": 10,
+      "name": "LEGO Classic Creative Brick Box",
+      "price": "799",
+      "weight": "1 set",
+      "img": "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800",
+      "cat": "toys",
+      "stock": 8,
+      "description": "Creative building set with colorful bricks for endless fun."
+    },
+    {
+      "id": 11,
+      "name": "Classmate Notebook",
+      "price": "45",
+      "weight": "200 pages",
+      "img": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800",
+      "cat": "student",
+      "stock": 45,
+      "description": "Premium quality notebook for students and professionals."
+    }
+  ]
+}

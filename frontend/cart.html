@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM - Shopping Cart</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+    <!-- Header Component -->
+    <div id="header-placeholder"></div>
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1>My Cart</h1>
+            <span class="cart-count" id="cartCount">0 items</span>
+        </div>
+
+        <div class="cart-content">
+            <!-- Empty Cart State -->
+            <div class="empty-cart" id="emptyCart">
+                <div class="empty-cart-icon">🛒</div>
+                <h2>Your cart is empty</h2>
+                <p>Add some delicious groceries to get started!</p>
+                <a href="index.html" class="shop-now-btn">Start Shopping</a>
+            </div>
+
+            <!-- Cart Items -->
+            <div class="cart-items" id="cartItems" style="display: none;">
+                <div class="cart-item" id="cartItemTemplate" style="display: none;">
+                    <div class="item-image">
+                        <img src="" alt="" id="itemImage">
+                    </div>
+                    <div class="item-details">
+                        <h3 id="itemName"></h3>
+                        <p class="item-weight" id="itemWeight"></p>
+                        <div class="item-price">
+                            <span class="current-price" id="itemPrice"></span>
+                            <span class="original-price" id="itemMrp"></span>
+                            <span class="discount" id="itemOff"></span>
+                        </div>
+                    </div>
+                    <div class="item-controls">
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                            <span class="quantity" id="itemQuantity">1</span>
+                            <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(this)">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <div class="summary-header">
+                    <h3>Order Summary</h3>
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Delivery Fee</span>
+                    <span id="deliveryFee">₹30</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>GST</span>
+                    <span id="gst">₹0</span>
+                </div>
+
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span id="total">₹0</span>
+                </div>
+
+                <div class="checkout-section">
+                    <button class="checkout-btn" onclick="proceedToCheckout()">
+                        Proceed to Checkout
+                    </button>
+                    <p class="delivery-info">
+                        🚚 Free delivery on orders above ₹500
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Continue Shopping -->
+        <div class="continue-shopping" id="continueShopping" style="display: none;">
+            <a href="index.html" class="continue-btn">Continue Shopping</a>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="footer-placeholder"></div>
+
+    <script src="components/header.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/api.js"></script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM - My Orders</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .orders-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .orders-header h1 {
+            color: #333;
+        }
+
+        .orders-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #00b761;
+            color: white;
+            border-color: #00b761;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: #00b761;
+        }
+
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-shipped { background: #fff3cd; color: #856404; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+
+        .order-date {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .order-items {
+            margin-bottom: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .item-name {
+            font-weight: 500;
+        }
+
+        .item-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-total {
+            text-align: right;
+            font-weight: 600;
+            color: #00b761;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.primary {
+            background: #00b761;
+            color: white;
+            border-color: #00b761;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-orders .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-orders h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .empty-orders p {
+            margin-bottom: 20px;
+        }
+
+        .shop-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #00b761;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .shop-btn:hover {
+            background: #005a3d;
+        }
+
+        .order-timeline {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 20px;
+            bottom: -10px;
+            width: 2px;
+            background: #eee;
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background: #00b761;
+        }
+
+        .timeline-item.active .timeline-dot {
+            background: #00b761;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .timeline-time {
+            color: #666;
+            font-size: 12px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .orders-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Component -->
+    <div id="header-placeholder"></div>
+
+    <div class="orders-container">
+        <div class="orders-header">
+            <h1>My Orders</h1>
+            <div class="orders-filter">
+                <button class="filter-btn active" data-filter="all">All Orders</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+        </div>
+
+        <div id="ordersList">
+            <!-- Orders will be populated by JavaScript -->
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-orders" id="emptyOrders" style="display: none;">
+            <div class="icon">📦</div>
+            <h2>No orders yet</h2>
+            <p>Start shopping to see your orders here!</p>
+            <a href="index.html" class="shop-btn">Start Shopping</a>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Order Details Modal -->
+    <div class="modal" id="orderModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Details</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="orderDetails">
+                <!-- Order details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="components/header.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="js/orders.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Sample orders data (in a real app, this would come from API)
+        const sampleOrders = [
+            {
+                id: "AAG12345",
+                status: "delivered",
+                date: "2024-01-23",
+                items: [
+                    { name: "Aashirvaad Atta", quantity: 2, price: 185 },
+                    { name: "Fresh Milk", quantity: 1, price: 65 }
+                ],
+                total: 435,
+                deliveryAddress: "123 Main Street, Apartment 4B, Downtown",
+                timeline: [
+                    { title: "Order Placed", time: "Jan 23, 10:15 AM", completed: true },
+                    { title: "Order Confirmed", time: "Jan 23, 10:20 AM", completed: true },
+                    { title: "Order Packed", time: "Jan 23, 11:45 AM", completed: true },
+                    { title: "Out for Delivery", time: "Jan 23, 12:30 PM", completed: true },
+                    { title: "Delivered", time: "Jan 23, 2:25 PM", completed: true }
+                ]
+            },
+            {
+                id: "AAG12346",
+                status: "shipped",
+                date: "2024-01-22",
+                items: [
+                    { name: "Fresh Vegetables", quantity: 3, price: 45 },
+                    { name: "Milk Pack", quantity: 1, price: 120 }
+                ],
+                total: 255,
+                deliveryAddress: "456 Oak Avenue, Building C, Floor 2",
+                timeline: [
+                    { title: "Order Placed", time: "Jan 22, 9:30 AM", completed: true },
+                    { title: "Order Confirmed", time: "Jan 22, 9:35 AM", completed: true },
+                    { title: "Order Packed", time: "Jan 22, 10:50 AM", completed: true },
+                    { title: "Out for Delivery", time: "Jan 22, 11:30 AM", completed: true },
+                    { title: "Delivered", time: "Expected: Jan 22, 1:30 PM", completed: false }
+                ]
+            },
+            {
+                id: "AAG12347",
+                status: "processing",
+                date: "2024-01-23",
+                items: [
+                    { name: "Grocery Items", quantity: 5, price: 75 }
+                ],
+                total: 375,
+                deliveryAddress: "789 Pine Road, Villa 15",
+                timeline: [
+                    { title: "Order Placed", time: "Jan 23, 8:45 AM", completed: true },
+                    { title: "Order Confirmed", time: "Jan 23, 8:50 AM", completed: true },
+                    { title: "Order Packed", time: "Processing...", completed: false },
+                    { title: "Out for Delivery", time: "Pending", completed: false },
+                    { title: "Delivered", time: "Pending", completed: false }
+                ]
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            setupFilters();
+        });
+
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    loadOrders();
+                });
+            });
+        }
+
+        function loadOrders() {
+            const ordersList = document.getElementById('ordersList');
+            const emptyOrders = document.getElementById('emptyOrders');
+
+            // Filter orders
+            let filteredOrders = sampleOrders;
+            if (currentFilter === 'active') {
+                filteredOrders = sampleOrders.filter(order => order.status === 'processing' || order.status === 'shipped');
+            } else if (currentFilter === 'completed') {
+                filteredOrders = sampleOrders.filter(order => order.status === 'delivered');
+            }
+
+            if (filteredOrders.length === 0) {
+                ordersList.innerHTML = '';
+                emptyOrders.style.display = 'block';
+                return;
+            }
+
+            emptyOrders.style.display = 'none';
+            ordersList.innerHTML = '';
+
+            filteredOrders.forEach(order => {
+                const orderCard = createOrderCard(order);
+                ordersList.appendChild(orderCard);
+            });
+        }
+
+        function createOrderCard(order) {
+            const card = document.createElement('div');
+            card.className = 'order-card';
+
+            const itemsHtml = order.items.map(item =>
+                `<div class="order-item">
+                    <div>
+                        <span class="item-name">${item.name}</span>
+                        <div class="item-details">Quantity: ${item.quantity}</div>
+                    </div>
+                    <span>₹${item.price * item.quantity}</span>
+                </div>`
+            ).join('');
+
+            card.innerHTML = `
+                <div class="order-header">
+                    <span class="order-id">Order #${order.id}</span>
+                    <span class="order-status status-${order.status}">${order.status}</span>
+                </div>
+                <div class="order-date">Ordered on ${formatDate(order.date)}</div>
+                <div class="order-items">
+                    ${itemsHtml}
+                </div>
+                <div class="order-total">Total: ₹${order.total}</div>
+                <div class="order-actions">
+                    <button class="action-btn" onclick="viewOrderDetails('${order.id}')">View Details</button>
+                    <button class="action-btn primary" onclick="reorder('${order.id}')">Reorder</button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function viewOrderDetails(orderId) {
+            const order = sampleOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const timelineHtml = order.timeline.map((item, index) => {
+                const isActive = item.title.toLowerCase().includes('packed') && order.status === 'processing';
+                const isCompleted = item.completed;
+                return `
+                    <div class="timeline-item ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">${item.title}</div>
+                            <div class="timeline-time">${item.time}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const itemsHtml = order.items.map(item =>
+                `<div class="order-item">
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span>₹${item.price * item.quantity}</span>
+                </div>`
+            ).join('');
+
+            const detailsHtml = `
+                <div class="order-detail-section">
+                    <h4>Order Information</h4>
+                    <p><strong>Order ID:</strong> ${order.id}</p>
+                    <p><strong>Date:</strong> ${formatDate(order.date)}</p>
+                    <p><strong>Status:</strong> <span class="order-status status-${order.status}">${order.status}</span></p>
+                    <p><strong>Delivery Address:</strong> ${order.deliveryAddress}</p>
+                </div>
+
+                <div class="order-detail-section">
+                    <h4>Items Ordered</h4>
+                    ${itemsHtml}
+                    <div class="order-total">Total: ₹${order.total}</div>
+                </div>
+
+                <div class="order-detail-section">
+                    <h4>Order Timeline</h4>
+                    <div class="order-timeline">
+                        ${timelineHtml}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('orderDetails').innerHTML = detailsHtml;
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        function reorder(orderId) {
+            const order = sampleOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            // Add items to cart (in a real app, this would update the cart)
+            alert(`Added ${order.items.length} items to cart from order ${orderId}`);
+            // In a real app, redirect to cart or show success message
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('orderModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>

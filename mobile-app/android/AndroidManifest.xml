@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.aagam.delivery">
+
+    <!-- Internet permission for API calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Location permissions for GPS tracking -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Phone permission for calling customers -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- Wake lock for background location updates -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Vibration permission for notifications -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Deliveries Activity -->
+        <activity
+            android:name=".DeliveriesActivity"
+            android:exported="false"
+            android:label="Available Deliveries" />
+
+        <!-- Delivery Details Activity -->
+        <activity
+            android:name=".DeliveryDetailsActivity"
+            android:exported="false"
+            android:label="Delivery Details" />
+
+        <!-- Profile Activity -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:label="Rider Profile" />
+
+        <!-- Earnings Activity -->
+        <activity
+            android:name=".EarningsActivity"
+            android:exported="false"
+            android:label="Earnings" />
+
+        <!-- Location Service -->
+        <service
+            android:name=".LocationUpdateService"
+            android:exported="false" />
+
+        <!-- Firebase Messaging Service (if using FCM) -->
+        <service
+            android:name=".AagamMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Boot Receiver for auto-start -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Meta-data for Google Maps API (if using maps) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_GOOGLE_MAPS_API_KEY" />
+
+        <!-- Meta-data for Firebase (if using Firebase) -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="true" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="true" />
+
+    </application>
+
+</manifest>

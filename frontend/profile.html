@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM - My Profile</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <style>
+        .profile-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .profile-header { text-align: center; margin-bottom: 30px; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 40px; }
+        .profile-form { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn { padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .profile-tabs { display: flex; margin-bottom: 30px; border-bottom: 1px solid #ddd; }
+        .tab-btn { padding: 15px 30px; border: none; background: none; cursor: pointer; font-size: 16px; border-bottom: 3px solid transparent; }
+        .tab-btn.active { border-bottom-color: #3498db; color: #3498db; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .account-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .info-item { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .change-password-section { margin-top: 30px; padding-top: 30px; border-top: 1px solid #ddd; }
+        .notification-settings { display: grid; gap: 15px; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3498db; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+    <!-- Header Component -->
+    <div id="header-placeholder"></div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <h1 id="profileName">Loading...</h1>
+            <p id="profileEmail">Loading...</p>
+        </div>
+
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" onclick="switchTab('personal')">Personal Info</button>
+            <button class="tab-btn" onclick="switchTab('account')">Account</button>
+            <button class="tab-btn" onclick="switchTab('notifications')">Notifications</button>
+        </div>
+
+        <!-- Personal Information Tab -->
+        <div id="personalTab" class="tab-content active">
+            <form class="profile-form" id="personalForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth">
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Account Tab -->
+        <div id="accountTab" class="tab-content">
+            <div class="account-info">
+                <h3>Account Information</h3>
+                <div class="info-item">
+                    <span>Member Since:</span>
+                    <span id="memberSince">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span>Total Orders:</span>
+                    <span id="totalOrders">0</span>
+                </div>
+                <div class="info-item">
+                    <span>Account Status:</span>
+                    <span id="accountStatus">Active</span>
+                </div>
+            </div>
+
+            <div class="change-password-section">
+                <h3>Change Password</h3>
+                <form class="profile-form" id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notificationsTab" class="tab-content">
+            <form class="profile-form" id="notificationsForm">
+                <h3>Notification Preferences</h3>
+                <div class="notification-settings">
+                    <div class="setting-item">
+                        <div>
+                            <h4>Order Updates</h4>
+                            <p>Get notified about order status changes</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="orderUpdates" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Promotional Offers</h4>
+                            <p>Receive notifications about special deals and offers</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="promotionalOffers">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Delivery Alerts</h4>
+                            <p>Get real-time updates on delivery status</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="deliveryAlerts" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Weekly Newsletter</h4>
+                            <p>Receive weekly updates and tips</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="weeklyNewsletter">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>SMS Notifications</h4>
+                            <p>Receive important updates via SMS</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="smsNotifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Preferences</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="footer-placeholder"></div>
+
+    <script src="components/header.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/api.js"></script>
+</body>
+</html>

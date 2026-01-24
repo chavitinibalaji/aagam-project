@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM - Checkout</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+    <!-- Header Component -->
+    <div id="header-placeholder"></div>
+
+    <div class="checkout-container">
+        <div class="checkout-header">
+            <h1>Checkout</h1>
+        </div>
+
+        <div class="checkout-content">
+            <div class="checkout-main">
+                <!-- Delivery Address -->
+                <div class="checkout-section">
+                    <h2>📍 Delivery Address</h2>
+                    <div class="address-list">
+                        <div class="address-card selected">
+                            <div class="address-header">
+                                <span class="address-type">Home</span>
+                                <button class="edit-btn" onclick="editAddress()">Edit</button>
+                            </div>
+                            <div class="address-details">
+                                <p id="selectedAddress">123 Main Street, Apartment 4B, Downtown, Bangalore - 560001</p>
+                                <p class="contact-info">John Doe • +91 9876543210</p>
+                            </div>
+                        </div>
+                        <button class="add-address-btn" onclick="addNewAddress()">
+                            ➕ Add New Address
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Delivery Time -->
+                <div class="checkout-section">
+                    <h2>⏰ Delivery Time</h2>
+                    <div class="time-slots">
+                        <div class="time-slot selected">
+                            <div class="slot-time">2:00 PM - 4:00 PM</div>
+                            <div class="slot-info">Today • Standard Delivery</div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="slot-time">6:00 PM - 8:00 PM</div>
+                            <div class="slot-info">Today • Evening Delivery</div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="slot-time">10:00 AM - 12:00 PM</div>
+                            <div class="slot-info">Tomorrow • Morning Delivery</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="checkout-section">
+                    <h2>💳 Payment Method</h2>
+                    <div class="payment-methods">
+                        <div class="payment-method selected">
+                            <div class="payment-icon">💳</div>
+                            <div class="payment-details">
+                                <div class="payment-type">Credit/Debit Card</div>
+                                <div class="payment-info">**** **** **** 1234</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-icon">📱</div>
+                            <div class="payment-details">
+                                <div class="payment-type">UPI</div>
+                                <div class="payment-info">Pay using UPI apps</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-icon">💵</div>
+                            <div class="payment-details">
+                                <div class="payment-type">Cash on Delivery</div>
+                                <div class="payment-info">Pay when you receive</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Notes -->
+                <div class="checkout-section">
+                    <h2>📝 Order Notes</h2>
+                    <textarea placeholder="Any special instructions for delivery?" id="orderNotes" rows="3"></textarea>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="checkout-sidebar">
+                <div class="order-summary-card">
+                    <h3>Order Summary</h3>
+
+                    <div class="order-items" id="orderItems">
+                        <!-- Items will be populated by JavaScript -->
+                    </div>
+
+                    <div class="order-totals">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee</span>
+                            <span id="checkoutDeliveryFee">₹30</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>GST</span>
+                            <span id="checkoutGst">₹0</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total</span>
+                            <span id="checkoutTotal">₹0</span>
+                        </div>
+                    </div>
+
+                    <button class="place-order-btn" onclick="placeOrder()">
+                        Place Order
+                    </button>
+
+                    <div class="order-promise">
+                        <div class="promise-item">
+                            <span class="promise-icon">🔒</span>
+                            <span>Secure Payment</span>
+                        </div>
+                        <div class="promise-item">
+                            <span class="promise-icon">🚚</span>
+                            <span>Fast Delivery</span>
+                        </div>
+                        <div class="promise-item">
+                            <span class="promise-icon">⭐</span>
+                            <span>Quality Guarantee</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Address Modal -->
+    <div class="modal" id="addressModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Address</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addressForm">
+                    <div class="form-group">
+                        <label for="addressType">Address Type</label>
+                        <select id="addressType">
+                            <option value="home">Home</option>
+                            <option value="work">Work</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fullAddress">Full Address</label>
+                        <textarea id="fullAddress" placeholder="Enter complete address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="landmark">Landmark (Optional)</label>
+                        <input type="text" id="landmark" placeholder="Nearby landmark">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactName">Contact Name</label>
+                        <input type="text" id="contactName" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhone">Contact Phone</label>
+                        <input type="tel" id="contactPhone" placeholder="Phone number" required>
+                    </div>
+                    <button type="submit" class="save-address-btn">Save Address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="components/header.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Checkout specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCheckoutData();
+            setupEventListeners();
+        });
+
+        function loadCheckoutData() {
+            // Load cart items and populate order summary
+            const cart = JSON.parse(localStorage.getItem('aagam_cart') || '[]');
+            const orderItems = document.getElementById('orderItems');
+
+            if (cart.length === 0) {
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            let subtotal = 0;
+            orderItems.innerHTML = '';
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-item';
+                itemElement.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-qty">x${item.quantity}</span>
+                    </div>
+                    <span class="item-price">₹${itemTotal}</span>
+                `;
+                orderItems.appendChild(itemElement);
+            });
+
+            const gst = Math.round(subtotal * 0.05); // 5% GST
+            const total = subtotal + 30 + gst; // 30 is delivery fee
+
+            document.getElementById('checkoutSubtotal').textContent = `₹${subtotal}`;
+            document.getElementById('checkoutDeliveryFee').textContent = '₹30';
+            document.getElementById('checkoutGst').textContent = `₹${gst}`;
+            document.getElementById('checkoutTotal').textContent = `₹${total}`;
+        }
+
+        function setupEventListeners() {
+            // Time slot selection
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.addEventListener('click', function() {
+                    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Payment method selection
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.addEventListener('click', function() {
+                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Address form submission
+            document.getElementById('addressForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveAddress();
+            });
+        }
+
+        function editAddress() {
+            // In a real app, this would populate the form with existing address
+            document.getElementById('addressModal').style.display = 'block';
+        }
+
+        function addNewAddress() {
+            document.getElementById('addressForm').reset();
+            document.getElementById('addressModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addressModal').style.display = 'none';
+        }
+
+        function saveAddress() {
+            const formData = {
+                type: document.getElementById('addressType').value,
+                address: document.getElementById('fullAddress').value,
+                landmark: document.getElementById('landmark').value,
+                name: document.getElementById('contactName').value,
+                phone: document.getElementById('contactPhone').value
+            };
+
+            // In a real app, this would save to backend
+            console.log('Saving address:', formData);
+            closeModal();
+
+            // Update displayed address
+            const addressText = `${formData.address}${formData.landmark ? ', ' + formData.landmark : ''}`;
+            document.getElementById('selectedAddress').textContent = addressText;
+
+            showToast('Address saved successfully!');
+        }
+
+        function placeOrder() {
+            const orderData = {
+                items: JSON.parse(localStorage.getItem('aagam_cart') || '[]'),
+                address: document.getElementById('selectedAddress').textContent,
+                deliveryTime: document.querySelector('.time-slot.selected .slot-time').textContent,
+                paymentMethod: document.querySelector('.payment-method.selected .payment-type').textContent,
+                notes: document.getElementById('orderNotes').value,
+                total: document.getElementById('checkoutTotal').textContent
+            };
+
+            // In a real app, this would send to backend
+            console.log('Placing order:', orderData);
+
+            // Clear cart and redirect
+            localStorage.removeItem('aagam_cart');
+            showToast('Order placed successfully!');
+
+            setTimeout(() => {
+                window.location.href = 'orders.html';
+            }, 2000);
+        }
+
+        function showToast(message) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #00b761;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

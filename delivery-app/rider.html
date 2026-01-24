@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM Rider App - React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="delivery.css">
+    <style>
+        .rider-app { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .status-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .delivery-card { transition: all 0.3s ease; border-left: 4px solid #00b761; }
+        .delivery-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-primary { background: linear-gradient(45deg, #00b761, #00a055); border: none; }
+        .btn-secondary { background: #6c757d; color: white; border: none; }
+        .notification { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="rider-app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Main App Component
+        function RiderApp() {
+            const [activeTab, setActiveTab] = useState('deliveries');
+            const [isOnline, setIsOnline] = useState(false);
+            const [ws, setWs] = useState(null);
+            const [connectionStatus, setConnectionStatus] = useState('disconnected');
+            const [currentLocation, setCurrentLocation] = useState(null);
+            const [availableDeliveries, setAvailableDeliveries] = useState([]);
+            const [activeDelivery, setActiveDelivery] = useState(null);
+            const [earnings, setEarnings] = useState({
+                today: 0, week: 0, month: 0, deliveries: 0, rating: 0, distance: 0
+            });
+            const [notifications, setNotifications] = useState([]);
+            const [riderProfile, setRiderProfile] = useState({
+                name: 'Alex Rider',
+                phone: '+91 9876543210',
+                email: 'alex.rider@aagam.com',
+                vehicle: 'Bike (KA 01 AB 1234)',
+                rating: 4.7,
+                reviews: 156
+            });
+
+            const locationWatchRef = useRef(null);
+
+            // Initialize WebSocket and location tracking
+            useEffect(() => {
+                connectWebSocket();
+                setupLocationTracking();
+                return () => {
+                    if (ws) ws.close();
+                    if (locationWatchRef.current) navigator.geolocation.clearWatch(locationWatchRef.current);
+                };
+            }, []);
+
+            // WebSocket connection
+            const connectWebSocket = () => {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const newWs = new WebSocket(`${protocol}//${window.location.host}`);
+
+                newWs.onopen = () => {
+                    setConnectionStatus('connected');
+                    newWs.send(JSON.stringify({
+                        type: 'rider_auth',
+                        riderId: 'rider_' + Date.now()
+                    }));
+                    addNotification('Connected to AAGAM network', 'success');
+                };
+
+                newWs.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                };
+
+                newWs.onclose = () => {
+                    setConnectionStatus('disconnected');
+                    addNotification('Disconnected from server', 'warning');
+                };
+
+                newWs.onerror = () => {
+                    setConnectionStatus('error');
+                    addNotification('Connection error', 'error');
+                };
+
+                setWs(newWs);
+            };
+
+            // Handle WebSocket messages
+            const handleWebSocketMessage = (data) => {
+                switch (data.type) {
+                    case 'new_delivery':
+                        setAvailableDeliveries(prev => [data.delivery, ...prev]);
+                        addNotification(`New delivery: ${data.delivery.distance}km away`, 'info');
+                        break;
+                    case 'earnings_update':
+                        setEarnings(data.earnings);
+                        break;
+                    case 'delivery_update':
+                        if (activeDelivery && activeDelivery.id === data.deliveryId) {
+                            setActiveDelivery(prev => ({ ...prev, status: data.status }));
+                        }
+                        break;
+                }
+            };
+
+            // Setup location tracking
+            const setupLocationTracking = () => {
+                if ('geolocation' in navigator) {
+                    locationWatchRef.current = navigator.geolocation.watchPosition(
+                        (position) => {
+                            const location = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                                accuracy: position.coords.accuracy,
+                                timestamp: Date.now()
+                            };
+                            setCurrentLocation(location);
+                            if (ws && ws.readyState === WebSocket.OPEN) {
+                                ws.send(JSON.stringify({
+                                    type: 'location_update',
+                                    location
+                                }));
+                            }
+                        },
+                        (error) => {
+                            console.error('Location error:', error);
+                            addNotification('Location tracking failed', 'error');
+                        },
+                        { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 }
+                    );
+                }
+            };
+
+            // Toggle online/offline status
+            const toggleStatus = () => {
+                const newStatus = !isOnline;
+                setIsOnline(newStatus);
+
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'status_change',
+                        status: newStatus ? 'online' : 'offline'
+                    }));
+                }
+
+                addNotification(
+                    newStatus ? 'You are now online' : 'You are now offline',
+                    newStatus ? 'success' : 'warning'
+                );
+            };
+
+            // Accept delivery
+            const acceptDelivery = (delivery) => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'accept_delivery',
+                        deliveryId: delivery.id
+                    }));
+                }
+                setActiveDelivery(delivery);
+                setAvailableDeliveries(prev => prev.filter(d => d.id !== delivery.id));
+                addNotification('Delivery accepted!', 'success');
+            };
+
+            // Complete delivery
+            const completeDelivery = () => {
+                if (ws && ws.readyState === WebSocket.OPEN && activeDelivery) {
+                    ws.send(JSON.stringify({
+                        type: 'complete_delivery',
+                        deliveryId: activeDelivery.id
+                    }));
+                }
+                setActiveDelivery(null);
+                addNotification('Delivery completed!', 'success');
+            };
+
+            // Add notification
+            const addNotification = (message, type = 'info') => {
+                const notification = { id: Date.now(), message, type };
+                setNotifications(prev => [...prev, notification]);
+                setTimeout(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== notification.id));
+                }, 3000);
+            };
+
+            // Call customer
+            const callCustomer = () => {
+                if (activeDelivery?.customerPhone) {
+                    window.location.href = `tel:${activeDelivery.customerPhone}`;
+                }
+            };
+
+            return (
+                <div className="rider-container">
+                    {/* Header */}
+                    <div className="rider-header">
+                        <h1>🚴 AAGAM Rider</h1>
+                        <div className="rider-status">
+                            <span style={{
+                                color: connectionStatus === 'connected' ? '#00b761' :
+                                       connectionStatus === 'error' ? '#dc3545' : '#ffc107'
+                            }}>
+                                {connectionStatus === 'connected' ? '🟢' :
+                                 connectionStatus === 'error' ? '❌' : '🟡'}
+                            </span>
+                            <span>{connectionStatus === 'connected' ? 'Connected' :
+                                   connectionStatus === 'error' ? 'Error' : 'Connecting...'}</span>
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="rider-nav">
+                        {['deliveries', 'earnings', 'profile'].map(tab => (
+                            <div
+                                key={tab}
+                                className={`nav-tab ${activeTab === tab ? 'active' : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Content */}
+                    <div className="rider-content">
+                        {/* Deliveries Tab */}
+                        {activeTab === 'deliveries' && (
+                            <div className="page active">
+                                {/* Status Card */}
+                                <div className="status-card">
+                                    <div className="status-indicator">
+                                        {isOnline ? '🟢' : '🔴'}
+                                    </div>
+                                    <div className="status-text">
+                                        You're {isOnline ? 'Online' : 'Offline'}
+                                    </div>
+                                    <div className="status-subtext">
+                                        {isOnline ? 'Ready to accept deliveries' : 'Not accepting deliveries'}
+                                    </div>
+                                    {currentLocation && (
+                                        <div className="location-indicator pulse" style={{
+                                            display: 'inline-block',
+                                            width: '8px',
+                                            height: '8px',
+                                            borderRadius: '50%',
+                                            background: '#00b761',
+                                            marginLeft: '5px'
+                                        }}></div>
+                                    )}
+                                    <button className="toggle-btn" onClick={toggleStatus}>
+                                        Go {isOnline ? 'Offline' : 'Online'}
+                                    </button>
+                                </div>
+
+                                {/* Active Delivery */}
+                                {activeDelivery && (
+                                    <div>
+                                        <h3 style={{marginBottom: '15px', color: '#00b761'}}>Current Delivery</h3>
+                                        <div className="delivery-card">
+                                            <div className="delivery-header">
+                                                <span className="order-id">Order #{activeDelivery.id.slice(-6)}</span>
+                                                <span className="delivery-time">{activeDelivery.distance}km away</span>
+                                            </div>
+                                            <div className="customer-info">
+                                                <div className="customer-name">{activeDelivery.customerName}</div>
+                                                <div className="customer-address">{activeDelivery.address}</div>
+                                            </div>
+                                            <div className="order-items">
+                                                {activeDelivery.items.map((item, index) => (
+                                                    <div key={index} className="order-item">
+                                                        • {item.quantity}x {item.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="delivery-total">₹{activeDelivery.total}</div>
+                                            <div className="action-btns">
+                                                <button className="btn-secondary" onClick={callCustomer}>📞 Call</button>
+                                                <button className="btn-primary" onClick={completeDelivery}>✅ Delivered</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Available Deliveries */}
+                                <div>
+                                    <h3 style={{marginBottom: '15px'}}>Available Deliveries</h3>
+                                    {availableDeliveries.map(delivery => (
+                                        <div key={delivery.id} className="delivery-card">
+                                            <div className="delivery-header">
+                                                <span className="order-id">Order #{delivery.id.slice(-6)}</span>
+                                                <span className="delivery-time">{delivery.distance}km away</span>
+                                            </div>
+                                            <div className="customer-info">
+                                                <div className="customer-name">{delivery.customerName}</div>
+                                                <div className="customer-address">{delivery.address}</div>
+                                            </div>
+                                            <div className="order-items">
+                                                {delivery.items.map((item, index) => (
+                                                    <div key={index} className="order-item">
+                                                        • {item.quantity}x {item.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="delivery-total">₹{delivery.total}</div>
+                                            <div className="action-btns">
+                                                <button className="btn-secondary">Details</button>
+                                                <button className="btn-primary" onClick={() => acceptDelivery(delivery)}>Accept</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {availableDeliveries.length === 0 && (
+                                        <div style={{textAlign: 'center', padding: '40px', color: '#666'}}>
+                                            No deliveries available right now
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Earnings Tab */}
+                        {activeTab === 'earnings' && (
+                            <div className="page active">
+                                <div className="earnings-card">
+                                    <div className="earnings-header">
+                                        <div className="earnings-title">Today's Earnings</div>
+                                        <div className="earnings-period">Jan 23, 2026</div>
+                                    </div>
+                                    <div className="earnings-amount">₹{earnings.today}</div>
+                                    <div className="earnings-breakdown">
+                                        <div className="earning-item">
+                                            <div className="earning-value">{earnings.deliveries}</div>
+                                            <div className="earning-label">Deliveries</div>
+                                        </div>
+                                        <div className="earning-item">
+                                            <div className="earning-value">{earnings.rating}</div>
+                                            <div className="earning-label">Rating</div>
+                                        </div>
+                                        <div className="earning-item">
+                                            <div className="earning-value">{earnings.distance}</div>
+                                            <div className="earning-label">Distance (km)</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="stats-grid">
+                                    <div className="stat-item">
+                                        <span className="stat-value">₹{earnings.week}</span>
+                                        <div className="stat-label">This Week</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-value">₹{earnings.month}</span>
+                                        <div className="stat-label">This Month</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-value">156</span>
+                                        <div className="stat-label">Total Deliveries</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-value">4.7</span>
+                                        <div className="stat-label">Avg Rating</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Profile Tab */}
+                        {activeTab === 'profile' && (
+                            <div className="page active">
+                                <div className="status-card">
+                                    <div className="status-indicator">👤</div>
+                                    <div className="status-text">Rider Profile</div>
+                                    <div className="status-subtext">Manage your account</div>
+                                </div>
+
+                                <div style={{marginTop: '20px'}}>
+                                    <div style={{marginBottom: '20px'}}>
+                                        <strong>Name:</strong> {riderProfile.name}<br/>
+                                        <strong>Phone:</strong> {riderProfile.phone}<br/>
+                                        <strong>Email:</strong> {riderProfile.email}<br/>
+                                        <strong>Vehicle:</strong> {riderProfile.vehicle}<br/>
+                                        <strong>Join Date:</strong> Jan 15, 2024<br/>
+                                        <strong>Rating:</strong> ⭐ {riderProfile.rating} ({riderProfile.reviews} reviews)
+                                    </div>
+
+                                    <button className="toggle-btn" style={{marginBottom: '10px'}}>Edit Profile</button>
+                                    <button className="toggle-btn offline">Logout</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Notifications */}
+                    {notifications.map(notification => (
+                        <div key={notification.id} className={`app-notification ${notification.type}`}>
+                            {notification.message}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<RiderApp />, document.getElementById('rider-app'));
+    </script>
+</body>
+</html>

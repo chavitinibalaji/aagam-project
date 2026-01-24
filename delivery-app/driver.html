@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM Driver Dashboard</title>
+    <link rel="stylesheet" href="delivery.css">
+</head>
+<body>
+    <div class="driver-container">
+        <!-- Header -->
+        <div class="driver-header">
+            <h1>AAGAM Driver</h1>
+            <div class="driver-status" id="driverStatus">Active</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="driver-nav">
+            <div class="nav-tab active" data-tab="overview">Overview</div>
+            <div class="nav-tab" data-tab="routes">Routes</div>
+            <div class="nav-tab" data-tab="vehicles">Vehicles</div>
+            <div class="nav-tab" data-tab="reports">Reports</div>
+        </div>
+
+        <!-- Content -->
+        <div class="driver-content">
+            <!-- Overview Tab -->
+            <div class="page active" id="overviewPage">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🚚</div>
+                        <div class="stat-info">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Active Deliveries</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📍</div>
+                        <div class="stat-info">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Routes Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-info">
+                            <div class="stat-value">95%</div>
+                            <div class="stat-label">On-Time Rate</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <div class="stat-value">₹2,450</div>
+                            <div class="stat-label">Today's Revenue</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule -->
+                <div class="schedule-section">
+                    <h3>Today's Schedule</h3>
+                    <div class="schedule-list">
+                        <div class="schedule-item">
+                            <div class="schedule-time">09:00 AM</div>
+                            <div class="schedule-details">
+                                <div class="schedule-title">Warehouse Pickup</div>
+                                <div class="schedule-location">AAGAM Warehouse, Sector 15</div>
+                                <div class="schedule-status completed">Completed</div>
+                            </div>
+                        </div>
+                        <div class="schedule-item active">
+                            <div class="schedule-time">10:30 AM</div>
+                            <div class="schedule-details">
+                                <div class="schedule-title">Delivery Route A</div>
+                                <div class="schedule-location">Downtown Area - 15 stops</div>
+                                <div class="schedule-status in-progress">In Progress</div>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-time">02:00 PM</div>
+                            <div class="schedule-details">
+                                <div class="schedule-title">Delivery Route B</div>
+                                <div class="schedule-location">Residential Area - 12 stops</div>
+                                <div class="schedule-status pending">Pending</div>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-time">05:00 PM</div>
+                            <div class="schedule-details">
+                                <div class="schedule-title">Return to Warehouse</div>
+                                <div class="schedule-location">AAGAM Warehouse, Sector 15</div>
+                                <div class="schedule-status pending">Pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="action-btn primary" onclick="startRoute()">Start Next Route</button>
+                    <button class="action-btn secondary" onclick="reportIssue()">Report Issue</button>
+                    <button class="action-btn secondary" onclick="emergencyStop()">Emergency Stop</button>
+                </div>
+            </div>
+
+            <!-- Routes Tab -->
+            <div class="page" id="routesPage">
+                <div class="routes-header">
+                    <h3>Delivery Routes</h3>
+                    <button class="btn-primary" onclick="optimizeRoutes()">Optimize Routes</button>
+                </div>
+
+                <div class="routes-list">
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Route A - Downtown</h4>
+                            <span class="route-status active">Active</span>
+                        </div>
+                        <div class="route-stats">
+                            <div class="route-stat">
+                                <span class="stat-number">15</span>
+                                <span class="stat-label">Stops</span>
+                            </div>
+                            <div class="route-stat">
+                                <span class="stat-number">45km</span>
+                                <span class="stat-label">Distance</span>
+                            </div>
+                            <div class="route-stat">
+                                <span class="stat-number">3.5hrs</span>
+                                <span class="stat-label">Est. Time</span>
+                            </div>
+                        </div>
+                        <div class="route-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            <span class="progress-text">9/15 completed</span>
+                        </div>
+                        <div class="route-actions">
+                            <button class="btn-secondary" onclick="viewRouteDetails()">View Details</button>
+                            <button class="btn-primary" onclick="continueRoute()">Continue</button>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Route B - Residential</h4>
+                            <span class="route-status pending">Pending</span>
+                        </div>
+                        <div class="route-stats">
+                            <div class="route-stat">
+                                <span class="stat-number">12</span>
+                                <span class="stat-label">Stops</span>
+                            </div>
+                            <div class="route-stat">
+                                <span class="stat-number">32km</span>
+                                <span class="stat-label">Distance</span>
+                            </div>
+                            <div class="route-stat">
+                                <span class="stat-number">2.8hrs</span>
+                                <span class="stat-label">Est. Time</span>
+                            </div>
+                        </div>
+                        <div class="route-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0/12 completed</span>
+                        </div>
+                        <div class="route-actions">
+                            <button class="btn-secondary" onclick="viewRouteDetails()">View Details</button>
+                            <button class="btn-primary" onclick="startRouteB()">Start Route</button>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Route C - Commercial</h4>
+                            <span class="route-status completed">Completed</span>
+                        </div>
+                        <div class="route-stats">
+                            <div class="route-stat">
+                                <span class="stat-number">8</span>
+                                <span class="stat-label">Stops</span>
+                            </div>
+                            <div class="route-stat">
+                                <span class="stat-number">28km</span>
+                                <span class="stat-label">Distance</span>
+                            </div>
+                            <div class="route-stat">
+                                <span class="stat-number">2.2hrs</span>
+                                <span class="stat-label">Est. Time</span>
+                            </div>
+                        </div>
+                        <div class="route-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-text">8/8 completed</span>
+                        </div>
+                        <div class="route-actions">
+                            <button class="btn-secondary" onclick="viewRouteDetails()">View Details</button>
+                            <button class="btn-secondary" disabled>Completed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicles Tab -->
+            <div class="page" id="vehiclesPage">
+                <div class="vehicles-header">
+                    <h3>Fleet Management</h3>
+                    <button class="btn-primary" onclick="addVehicle()">Add Vehicle</button>
+                </div>
+
+                <div class="vehicles-list">
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-icon">🚛</div>
+                            <div class="vehicle-info">
+                                <h4>Tata Ace - KA 01 AB 1234</h4>
+                                <span class="vehicle-status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-details">
+                            <div class="vehicle-stat">
+                                <span class="stat-label">Capacity:</span>
+                                <span class="stat-value">1.5 tons</span>
+                            </div>
+                            <div class="vehicle-stat">
+                                <span class="stat-label">Mileage:</span>
+                                <span class="stat-value">12 km/l</span>
+                            </div>
+                            <div class="vehicle-stat">
+                                <span class="stat-label">Last Service:</span>
+                                <span class="stat-value">Jan 10, 2024</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-actions">
+                            <button class="btn-secondary" onclick="viewMaintenance()">Maintenance</button>
+                            <button class="btn-secondary" onclick="assignDriver()">Assign Driver</button>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-icon">🚚</div>
+                            <div class="vehicle-info">
+                                <h4>Mahindra Bolero - KA 01 CD 5678</h4>
+                                <span class="vehicle-status maintenance">Maintenance</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-details">
+                            <div class="vehicle-stat">
+                                <span class="stat-label">Capacity:</span>
+                                <span class="stat-value">2.0 tons</span>
+                            </div>
+                            <div class="vehicle-stat">
+                                <span class="stat-label">Mileage:</span>
+                                <span class="stat-value">10 km/l</span>
+                            </div>
+                            <div class="vehicle-stat">
+                                <span class="stat-label">Last Service:</span>
+                                <span class="stat-value">Jan 20, 2024</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-actions">
+                            <button class="btn-secondary" onclick="scheduleService()">Schedule Service</button>
+                            <button class="btn-secondary" disabled>Unavailable</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="page" id="reportsPage">
+                <div class="reports-header">
+                    <h3>Performance Reports</h3>
+                    <div class="report-filters">
+                        <select id="reportPeriod">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                        <button class="btn-secondary" onclick="exportReport()">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-cards">
+                    <div class="report-card">
+                        <h4>Delivery Performance</h4>
+                        <div class="performance-metrics">
+                            <div class="metric">
+                                <span class="metric-value">95%</span>
+                                <span class="metric-label">On-Time Delivery</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">98%</span>
+                                <span class="metric-label">Customer Satisfaction</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">2.1hrs</span>
+                                <span class="metric-label">Avg Delivery Time</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h4>Fuel Efficiency</h4>
+                        <div class="fuel-metrics">
+                            <div class="metric">
+                                <span class="metric-value">11.2 km/l</span>
+                                <span class="metric-label">Average Mileage</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">₹1,250</span>
+                                <span class="metric-label">Fuel Cost Today</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">15%</span>
+                                <span class="metric-label">Cost Savings</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h4>Revenue Analytics</h4>
+                        <div class="revenue-metrics">
+                            <div class="metric">
+                                <span class="metric-value">₹2,450</span>
+                                <span class="metric-label">Today's Revenue</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">₹18,500</span>
+                                <span class="metric-label">Weekly Revenue</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">+12%</span>
+                                <span class="metric-label">Growth</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <h4>Delivery Trends</h4>
+                    <div class="chart-placeholder">
+                        <div class="chart-icon">📊</div>
+                        <p>Interactive charts would be displayed here</p>
+                        <small>Integration with charting library needed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="delivery.js"></script>
+</body>
+</html>

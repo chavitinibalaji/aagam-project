@@ -1,0 +1,64 @@
+{
+  "inventory": [
+    {
+      "id": 1,
+      "name": "Aashirvaad Atta",
+      "category": "groceries",
+      "stock": 25,
+      "minStock": 10,
+      "lastUpdated": "2026-01-23T08:37:14.389Z",
+      "price": 180,
+      "unit": "kg"
+    },
+    {
+      "id": 2,
+      "name": "Fresh Milk",
+      "category": "dairy",
+      "stock": 8,
+      "minStock": 5,
+      "lastUpdated": "2026-01-23T08:37:14.389Z",
+      "price": 25,
+      "unit": "liters"
+    },
+    {
+      "id": 3,
+      "name": "Fresh Vegetables",
+      "category": "vegetables",
+      "stock": 45,
+      "minStock": 15,
+      "lastUpdated": "2026-01-23T08:37:14.389Z",
+      "price": 50,
+      "unit": "kg"
+    },
+    {
+      "id": 4,
+      "name": "Rice Pack",
+      "category": "groceries",
+      "stock": 3,
+      "minStock": 8,
+      "lastUpdated": "2026-01-23T08:37:14.389Z",
+      "price": 120,
+      "unit": "kg"
+    },
+    {
+      "id": 5,
+      "name": "Fruit Basket",
+      "category": "fruits",
+      "stock": 12,
+      "minStock": 6,
+      "lastUpdated": "2026-01-23T08:37:14.389Z",
+      "price": 200,
+      "unit": "basket"
+    },
+    {
+      "id": 6,
+      "name": "Soft Drinks",
+      "category": "beverages",
+      "stock": 30,
+      "minStock": 12,
+      "lastUpdated": "2026-01-23T08:37:14.389Z",
+      "price": 35,
+      "unit": "bottles"
+    }
+  ]
+}

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAGAM Order Tracking</title>
+    <link rel="stylesheet" href="delivery.css">
+    <style>
+        .tracking-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .tracking-header {
+            background-color: #00b761;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .tracking-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .order-number {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .tracking-content {
+            padding: 20px;
+        }
+
+        .order-summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .order-status {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-preparing { background-color: #fff3cd; color: #856404; }
+        .status-ready { background-color: #d1ecf1; color: #0c5460; }
+        .status-out { background-color: #d4edda; color: #155724; }
+        .status-delivered { background-color: #d1ecf1; color: #0c5460; }
+
+        .estimated-time {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00b761;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .order-details {
+            border-top: 1px solid #e9ecef;
+            padding-top: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .item-name {
+            font-weight: 500;
+        }
+
+        .item-price {
+            color: #00b761;
+            font-weight: 600;
+        }
+
+        .order-total {
+            border-top: 2px solid #e9ecef;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #00b761;
+            text-align: right;
+        }
+
+        .tracking-timeline {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e9ecef;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            padding-bottom: 30px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 11px;
+            top: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid #e9ecef;
+            background-color: white;
+        }
+
+        .timeline-dot.active {
+            background-color: #00b761;
+            border-color: #00b761;
+        }
+
+        .timeline-dot.completed {
+            background-color: #00b761;
+            border-color: #00b761;
+        }
+
+        .timeline-content {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-time {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .timeline-description {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .delivery-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .delivery-person {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .rider-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #00b761;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        .rider-details h4 {
+            margin: 0 0 5px 0;
+            font-weight: 600;
+        }
+
+        .rider-rating {
+            color: #ffc107;
+            font-size: 14px;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .contact-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .contact-btn.call {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .contact-btn.message {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .location-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .location-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .location-icon {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .location-text {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .map-placeholder {
+            height: 200px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            color: #6c757d;
+        }
+
+        .actions-section {
+            margin-top: 30px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .action-btn.help {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .action-btn.reorder {
+            background-color: #00b761;
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .tracking-container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tracking-container">
+        <!-- Header -->
+        <div class="tracking-header">
+            <h1>Order Tracking</h1>
+            <div class="order-number">Order #AAG12345</div>
+        </div>
+
+        <!-- Content -->
+        <div class="tracking-content">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div class="order-status">
+                    <span class="status-badge status-out">Out for Delivery</span>
+                </div>
+                <div class="estimated-time">
+                    Estimated delivery: 2:30 PM
+                </div>
+                <div class="order-details">
+                    <div class="order-item">
+                        <span class="item-name">Aashirvaad Atta (5kg)</span>
+                        <span class="item-price">₹285</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="item-name">Fresh Milk (1L)</span>
+                        <span class="item-price">₹65</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="item-name">Delivery Fee</span>
+                        <span class="item-price">₹30</span>
+                    </div>
+                    <div class="order-total">
+                        Total: ₹380
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking Timeline -->
+            <div class="tracking-timeline">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot completed"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Order Placed</div>
+                        <div class="timeline-time">Jan 23, 2024 at 10:15 AM</div>
+                        <div class="timeline-description">Your order has been confirmed and payment processed.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot completed"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Order Confirmed</div>
+                        <div class="timeline-time">Jan 23, 2024 at 10:20 AM</div>
+                        <div class="timeline-description">Store has confirmed your order and started preparation.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot completed"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Order Packed</div>
+                        <div class="timeline-time">Jan 23, 2024 at 11:45 AM</div>
+                        <div class="timeline-description">Your order has been carefully packed and is ready for pickup.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot active"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Out for Delivery</div>
+                        <div class="timeline-time">Jan 23, 2024 at 12:30 PM</div>
+                        <div class="timeline-description">Your order is on the way! Rider will arrive soon.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Delivered</div>
+                        <div class="timeline-time">Estimated: 2:30 PM</div>
+                        <div class="timeline-description">Order will be delivered to your doorstep.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Info -->
+            <div class="delivery-info">
+                <div class="delivery-person">
+                    <div class="rider-avatar">👤</div>
+                    <div class="rider-details">
+                        <h4>Rajesh Kumar</h4>
+                        <div class="rider-rating">⭐ 4.8 (247 deliveries)</div>
+                    </div>
+                </div>
+
+                <div class="contact-actions">
+                    <button class="contact-btn call" onclick="callRider()">
+                        📞 Call Rider
+                    </button>
+                    <button class="contact-btn message" onclick="messageRider()">
+                        💬 Message
+                    </button>
+                </div>
+
+                <div class="location-info">
+                    <div class="location-item">
+                        <div class="location-icon">📍</div>
+                        <div class="location-text">From: AAGAM Store, Sector 15</div>
+                    </div>
+                    <div class="location-item">
+                        <div class="location-icon">🏠</div>
+                        <div class="location-text">To: Your Address, Downtown</div>
+                    </div>
+                    <div class="location-item">
+                        <div class="location-icon">🚴</div>
+                        <div class="location-text">Distance: 3.2 km | ETA: 15 mins</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Placeholder -->
+            <div class="map-placeholder">
+                <div>
+                    🗺️ Interactive Map<br>
+                    <small>Real-time location tracking would be shown here</small>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-section">
+                <div class="action-buttons">
+                    <button class="action-btn help" onclick="getHelp()">
+                        Need Help?
+                    </button>
+                    <button class="action-btn reorder" onclick="reorder()">
+                        Reorder Items
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate real-time updates
+        let currentStatus = 'out';
+        const statusElements = {
+            'placed': { badge: 'status-preparing', text: 'Order Placed' },
+            'confirmed': { badge: 'status-preparing', text: 'Preparing' },
+            'packed': { badge: 'status-ready', text: 'Ready for Pickup' },
+            'out': { badge: 'status-out', text: 'Out for Delivery' },
+            'delivered': { badge: 'status-delivered', text: 'Delivered' }
+        };
+
+        function updateStatus(newStatus) {
+            currentStatus = newStatus;
+            const statusBadge = document.querySelector('.status-badge');
+            const timelineDots = document.querySelectorAll('.timeline-dot');
+
+            // Update status badge
+            statusBadge.className = 'status-badge ' + statusElements[newStatus].badge;
+            statusBadge.textContent = statusElements[newStatus].text;
+
+            // Update timeline dots
+            timelineDots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index < Object.keys(statusElements).indexOf(newStatus) + 1) {
+                    dot.classList.add('completed');
+                } else if (index === Object.keys(statusElements).indexOf(newStatus) + 1) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        function callRider() {
+            // In real app, this would initiate a phone call
+            alert('Calling rider: +91 9876543210');
+        }
+
+        function messageRider() {
+            // In real app, this would open messaging interface
+            alert('Opening chat with rider...');
+        }
+
+        function getHelp() {
+            // In real app, this would open help/support interface
+            alert('Opening customer support...');
+        }
+
+        function reorder() {
+            // In real app, this would redirect to reorder page
+            alert('Redirecting to reorder page...');
+        }
+
+        // Simulate status updates (for demo purposes)
+        setTimeout(() => {
+            updateStatus('delivered');
+            document.querySelector('.estimated-time').textContent = 'Delivered at 2:25 PM';
+        }, 10000); // Update after 10 seconds for demo
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AAGAM Order Tracking loaded');
+        });
+    </script>
+</body>
+</html>

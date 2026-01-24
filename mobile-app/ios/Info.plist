@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- Location Services -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>AAGAM needs location access to track deliveries and provide accurate service.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>AAGAM needs location access to track deliveries even when the app is in background.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>AAGAM needs location access to track deliveries and provide real-time updates.</string>
+
+	<!-- Camera and Photo Library -->
+	<key>NSCameraUsageDescription</key>
+	<string>AAGAM needs camera access to capture delivery photos and proof of delivery.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>AAGAM needs photo library access to store delivery images.</string>
+
+	<!-- Phone Calls -->
+	<key>NSContactsUsageDescription</key>
+	<string>AAGAM needs contacts access to call customers for delivery coordination.</string>
+
+	<!-- Push Notifications -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- Firebase Configuration -->
+	<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
+	<false/>
+	<key>FIREBASE_CRASHLYTICS_COLLECTION_ENABLED</key>
+	<false/>
+
+	<!-- App Transport Security -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsForMedia</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
+
+	<!-- Custom URL Schemes -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>aagamdelivery</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Siri Integration -->
+	<key>INIntentsSupported</key>
+	<array>
+		<string>INStartWorkoutIntent</string>
+		<string>INPauseWorkoutIntent</string>
+		<string>INEndWorkoutIntent</string>
+		<string>INCancelWorkoutIntent</string>
+	</array>
+
+	<!-- HealthKit (if needed for fitness tracking) -->
+	<key>NSHealthShareUsageDescription</key>
+	<string>AAGAM uses HealthKit to track delivery activity and provide health insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>AAGAM uses HealthKit to record delivery activities and steps.</string>
+
+	<!-- Siri Shortcuts -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.aagam.delivery.startDelivery</string>
+		<string>com.aagam.delivery.endDelivery</string>
+		<string>com.aagam.delivery.checkEarnings</string>
+	</array>
+
+	<!-- App Clips (if implementing) -->
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- Widget Configuration -->
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
+	</dict>
+
+</dict>
+</plist>
