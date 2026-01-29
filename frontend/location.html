@@ -1,1 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AAGAM - Anakapalli Quick Delivery</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+ 
+  <!-- Google Maps API – replace with your real key -->
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY&libraries=places,geometry&callback=initMap">
+  </script>
 
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #1f1f1f;
+      min-height: 100vh;
+    }
+    #locationPage {
+      max-width: 420px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+    }
+    .logo-img { max-height: 140px; margin: 40px auto 24px; display: block; }
+    .title { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { font-size: 15px; color: #555; margin-bottom: 32px; line-height: 1.4; }
+    .detect-btn {
+      background: #00c853; color: white; border: none; border-radius: 12px;
+      padding: 16px; font-size: 17px; font-weight: 600; cursor: pointer;
+      margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .detect-btn:hover { background: #00b140; }
+    .detect-btn:disabled { background: #aaa; cursor: not-allowed; }
+    .or-text { color: #777; font-size: 14px; margin: 16px 0; }
+    .search-container { position: relative; margin-bottom: 24px; }
+    input {
+      width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #ddd; border-radius: 12px;
+      font-size: 16px; outline: none;
+    }
+    input:focus { border-color: #00c853; box-shadow: 0 0 0 3px rgba(0,200,83,0.12); }
+    .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999; font-size: 18px; pointer-events: none; }
+    .status-text { font-size: 15px; color: #333; margin: 16px 0 32px; min-height: 60px; line-height: 1.5; font-weight: 500; }
+    .loader {
+      border: 4px solid #f3f3f3; border-top: 4px solid #00c853; border-radius: 50%;
+      width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 20px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg { color: #d32f2f; font-weight: 500; margin: 20px 0; line-height: 1.5; }
+    .popular-title { font-size: 18px; font-weight: 600; margin: 32px 0 16px; color: #333; }
+    .location-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+    .location-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa;
+      border-radius: 10px; cursor: pointer; transition: background 0.2s;
+    }
+    .location-item:hover { background: #e8f5e9; }
+    /* Address Modal */
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+      z-index: 2000;
+    }
+    .modal-content {
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-radius: 28px;
+      width: 90%; max-width: 420px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+    .modal-header {
+      padding: 20px 24px; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      color: #2c3e50; font-size: 1.4rem; font-weight: 600; text-align: center; position: relative;
+    }
+    .close-modal { position: absolute; right: 20px; top: 20px; font-size: 1.5rem; cursor: pointer; opacity: 0.7; }
+    .close-modal:hover { opacity: 1; }
+    .modal-body { padding: 24px; }
+    .label { font-size: 0.95rem; color: #4a5568; margin-bottom: 8px; font-weight: 500; }
+    .tag-container { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tag {
+      padding: 10px 18px; border-radius: 50px; font-size: 0.95rem; font-weight: 500; cursor: pointer;
+      border: 1.5px solid rgba(160,174,192,0.4); background: rgba(255,255,255,0.6); transition: all 0.2s;
+    }
+    .tag.active, .tag:hover {
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); border-color: #a1c4fd;
+    }
+    input[type="text"], input[type="tel"] {
+      width: 100%; padding: 14px 16px; border: 1.5px solid rgba(160,174,192,0.5); border-radius: 16px;
+      font-size: 1rem; background: rgba(255,255,255,0.75);
+    }
+    input:focus { border-color: #a1c4fd; box-shadow: 0 0 0 4px rgba(161,196,253,0.2); outline: none; }
+    .required::after { content:"*"; color:#e53e3e; margin-left:4px; }
+    .error { color:#e53e3e; font-size:0.82rem; margin-top:6px; display:none; }
+    .loading { font-size:0.85rem; color:#718096; margin-top:4px; display:none; }
+    .input-with-refresh { position: relative; }
+    .refresh-btn {
+      position: absolute; right:12px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:#718096; font-size:1.1rem; cursor:pointer;
+    }
+    .refresh-btn:disabled { opacity:0.4; cursor:not-allowed; }
+    .save-btn {
+      width:100%; padding:16px; margin-top:24px; background:linear-gradient(135deg,#a1c4fd 0%,#c2e9fb 100%);
+      color:#2c3e50; border:none; border-radius:16px; font-size:1.1rem; font-weight:600; cursor:pointer;
+    }
+    .save-btn:disabled { opacity:0.6; cursor:not-allowed; }
+    /* Home Screen */
+    #homeScreen { display:none; }
+    .top-bar {
+      background:white; padding:12px 16px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:12px;
+      position:sticky; top:0; z-index:100;
+    }
+    .logo { font-weight:700; font-size:1.4rem; color:#00c853; }
+    .location { display:flex; align-items:center; gap:6px; font-size:0.95rem; color:#333; flex:1; }
+    .search-bar { flex:1; max-width:320px; position:relative; }
+    .search-bar input {
+      width:100%; padding:10px 16px 10px 40px; border:1px solid #ddd; border-radius:50px; background:#f8f9fa;
+    }
+    .search-bar i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#999; }
+    .icons { display:flex; gap:20px; font-size:1.3rem; color:#555; }
+    .categories {
+      display:flex; overflow-x:auto; padding:12px 16px; gap:24px; background:white; border-bottom:1px solid #eee;
+    }
+    .category {
+      font-size:0.95rem; font-weight:500; color:#555; padding-bottom:8px; cursor:pointer;
+    }
+    .category.active { color:#00c853; border-bottom:3px solid #00c853; }
+    .welcome { text-align:center; margin:60px 20px; font-size:1.4rem; color:#333; }
+    /* Footer */
+    .footer {
+      margin-top: auto;
+      padding: 20px 0 40px;
+      font-size: 0.85rem;
+      color: #777;
+      text-align: center;
+      line-height: 1.6;
+      border-top: 1px solid #eee;
+    }
+    .footer a {
+      color: #00c853;
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- Location Selection Page -->
+  <div id="locationPage">
+    <img src="https://raw.githubusercontent.com/chavitinibalaji/aagam-assets/main/IMG_AAGAM.png" alt="AAGAM" class="logo-img">
+    <h1 class="title">Select Location</h1>
+    <p class="subtitle">Set your delivery location around Anakapalli to see available products & stores</p>
+    <button class="detect-btn" id="detectBtn">
+      <i class="fas fa-location-crosshairs"></i> Use my current location
+    </button>
+    <div class="or-text">OR</div>
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <gmp-place-autocomplete>
+        <input placeholder="Search area, village, landmark..." type="text" />
+      </gmp-place-autocomplete>
+    </div>
+    <p class="status-text" id="statusText">Waiting for your location...</p>
+    <div id="loadingState" style="display:none;">
+      <div class="loader"></div>
+      <p class="status-text">Checking if we deliver here...</p>
+    </div>
+    <div id="notServiceable" class="error-msg" style="display:none;">
+      Sorry, we don't deliver to this location yet.<br>Please try an area closer to Anakapalli.
+    </div>
+ 
+    <button class="detect-btn" id="startShoppingBtn" style="margin-top:32px; display:none;">Add Address Details →</button>
+    </div>
+    <div class="popular-title">Popular villages & areas in Anakapalle Mandal</div>
+    <div class="location-list" id="popularList"></div>
+    <div class="footer">
+      © 2026 AAGAM – All Rights Reserved<br>
+      Fast delivery in Anakapalli & surrounding villages, Andhra Pradesh<br>
+      <a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a> • <a href="#">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- Address Details Modal -->
+  <div class="modal" id="addressModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        Add Address Details
+        <i class="fas fa-times close-modal" id="closeModal"></i>
+      </div>
+      <div class="modal-body">
+        <div class="label">Save Address as</div>
+        <div class="tag-container">
+          <div class="tag active"><i class="fas fa-home"></i> Home</div>
+          <div class="tag"><i class="fas fa-briefcase"></i> Work</div>
+          <div class="tag"><i class="fas fa-map-marker-alt"></i> Others</div>
+        </div>
+        <div class="input-group">
+          <div class="label">Company name / Floor <span class="required"></span></div>
+          <input type="text" id="companyFloor" placeholder="e.g. Amul Dairy, 3rd Floor">
+        </div>
+        <div class="input-group">
+          <div class="label">Building name <span class="required"></span></div>
+          <input type="text" id="building" placeholder="e.g. Sunshine Towers">
+        </div>
+        <div class="input-group">
+          <div class="label">Landmark</div>
+          <input type="text" id="landmark" placeholder="e.g. Near City Market">
+        </div>
+        <div class="input-group">
+          <div class="label">Pincode <span class="required"></span></div>
+          <input type="tel" id="pincode" placeholder="6-digit PIN code" maxlength="6">
+          <div class="loading" id="pinLoading">Fetching city & state...</div>
+          <div class="error" id="pinError"></div>
+        </div>
+        <div class="input-group input-with-refresh">
+          <div class="label">City / District</div>
+          <input type="text" id="city" readonly placeholder="Auto-filled from pincode">
+          <button class="refresh-btn" id="refreshBtn" disabled><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div class="input-group">
+          <div class="label">State</div>
+          <input type="text" id="state" readonly placeholder="Auto-filled from pincode">
+        </div>
+        <div class="input-group">
+          <div class="label">Receiver Name <span class="required"></span></div>
+          <input type="text" id="receiverName" placeholder="Full name" value="">
+          <div class="error" id="receiverNameError"></div>
+        </div>
+        <div class="input-group">
+          <div class="label">Mobile Number <span class="required"></span></div>
+          <input type="tel" id="mobile" placeholder="10-digit mobile number" maxlength="10">
+          <div class="error" id="mobileError"></div>
+        </div>
+        
+        <button class="save-btn" id="saveAddressBtn" disabled onclick="window.location.href = 'index.html'">
+      Save & Continue
+    </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home Screen -->
+  <div id="homeScreen">
+    <div class="top-bar">
+      <div class="logo">AAGAM</div>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        <span id="currentLocationDisplay">Anakapalli</span>
+      </div>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search groceries..." />
+      </div>
+      <div class="icons">
+        <i class="fas fa-user-circle"></i>
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+    </div>
+    <div class="categories">
+      <div class="category active">All</div>
+      <div class="category">Grocery</div>
+      <div class="category">Fruits</div>
+      <div class="category">Vegetables</div>
+      <div class="category">Dairy</div>
+      <div class="category">Snacks</div>
+      <div class="category">Beauty</div>
+    </div>
+    <div class="welcome">
+      Welcome to AAGAM!<br>
+      <small>Fast delivery in Anakapalli & nearby villages</small>
+    </div>
+    <div class="footer">
+      © 2026 AAGAM – All Rights Reserved<br>
+      Fast delivery in Anakapalli & surrounding villages, Andhra Pradesh<br>
+      <a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a> • <a href="#">Contact Us</a>
+    </div>
+  </div>
+
+  <script>
+    let geocoder;
+    const statusText = document.getElementById('statusText');
+    const detectBtn = document.getElementById('detectBtn');
+    const popularList = document.getElementById('popularList');
+    const loadingState = document.getElementById('loadingState');
+    const notServiceable = document.getElementById('notServiceable');
+    const startShoppingBtn = document.getElementById('startShoppingBtn');
+    const addressModal = document.getElementById('addressModal');
+    const homeScreen = document.getElementById('homeScreen');
+    const locationPage = document.getElementById('locationPage');
+    const currentLocationDisplay = document.getElementById('currentLocationDisplay');
+
+    const serviceCenter = { lat: 17.6860, lng: 83.0088 };
+    const serviceRadiusMeters = 25000;
+
+    const darkStores = [
+      { name: "Anakapalli Main Hub", lat: 17.6860, lng: 83.0088, baseTime: 12 },
+    ];
+
+    const popularAreas = [
+      { name: "Thummapala", desc: "Near NH16, industrial area" },
+      { name: "Sankaram", desc: "Famous for Buddhist caves" },
+      { name: "Maredupudi", desc: "Rural agriculture village" }
+    ];
+
+    popularAreas.forEach(area => {
+      const item = document.createElement('div');
+      item.className = 'location-item';
+      item.innerHTML = `<i class="fas fa-map-marker-alt"></i><div class="details"><strong>${area.name}</strong><span>${area.desc}</span></div>`;
+      item.onclick = () => {
+        statusText.textContent = `Selected: ${area.name}`;
+        simulateValidation(serviceCenter);
+      };
+      popularList.appendChild(item);
+    });
+
+    async function initMap() {
+      geocoder = new google.maps.Geocoder();
+      const autocomplete = document.querySelector('gmp-place-autocomplete');
+      autocomplete.addEventListener('gmp-select', async (event) => {
+        const placePrediction = event.detail.placePrediction;
+        if (!placePrediction) return;
+        const place = placePrediction.toPlace();
+        await place.fetchFields({ fields: ['formattedAddress', 'location'] });
+        const latLng = place.location;
+        statusText.textContent = `Selected: ${place.formattedAddress}`;
+        simulateValidation(latLng);
+      });
+      autocomplete.locationBias = { center: serviceCenter, radius: serviceRadiusMeters };
+    }
+
+    detectBtn.addEventListener('click', () => {
+      if (!navigator.geolocation) return statusText.textContent = 'Geolocation not supported';
+      detectBtn.disabled = true;
+      detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const latLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              statusText.textContent = `Detected: ${results[0].formatted_address}`;
+            }
+            simulateValidation(latLng);
+          });
+        },
+        () => statusText.textContent = 'Location access denied',
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      ).finally(() => {
+        detectBtn.disabled = false;
+        detectBtn.innerHTML = '<i class="fas fa-location-crosshairs"></i> Use my current location';
+      });
+    });
+
+    function simulateValidation(latLng) {
+      loadingState.style.display = 'block';
+      notServiceable.style.display = 'none';
+
+      const distance = google.maps.geometry.spherical.computeDistanceBetween(
+        new google.maps.LatLng(latLng.lat, latLng.lng),
+        new google.maps.LatLng(serviceCenter.lat, serviceCenter.lng)
+      );
+
+      setTimeout(() => {
+        loadingState.style.display = 'none';
+        if (distance <= serviceRadiusMeters) {
+          document.getElementById('startShoppingBtn').style.display = 'block';
+        } else {
+          notServiceable.style.display = 'block';
+        }
+      }, 1500);
+    }
+
+    startShoppingBtn.addEventListener('click', () => {
+      addressModal.style.display = 'flex';
+    });
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      addressModal.style.display = 'none';
+    });
+
+    const pinInput = document.getElementById('pincode');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const pinLoading = document.getElementById('pinLoading');
+    const pinError = document.getElementById('pinError');
+    const mobileInput = document.getElementById('mobile');
+    const mobileError = document.getElementById('mobileError');
+    const saveBtn = document.getElementById('saveAddressBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    async function fetchFromPincode() {
+      const pin = pinInput.value.trim();
+      if (pin.length !== 6 || !/^\d{6}$/.test(pin)) return;
+      pinLoading.style.display = 'block';
+      pinError.style.display = 'none';
+      refreshBtn.disabled = true;
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+        const data = await res.json();
+        if (data[0]?.Status === "Success" && data[0].PostOffice?.length) {
+          const po = data[0].PostOffice[0];
+          cityInput.value = po.District || '';
+          stateInput.value = po.State || '';
+        } else throw new Error();
+      } catch {
+        pinError.textContent = 'Invalid pincode';
+        pinError.style.display = 'block';
+        cityInput.value = stateInput.value = '';
+      } finally {
+        pinLoading.style.display = 'none';
+        refreshBtn.disabled = false;
+        validateForm();
+      }
+    }
+
+    pinInput.addEventListener('input', () => {
+      if (pinInput.value.length === 6) fetchFromPincode();
+      else {
+        cityInput.value = stateInput.value = '';
+        validateForm();
+      }
+    });
+
+    refreshBtn.addEventListener('click', fetchFromPincode);
+
+    function validateForm() {
+      const pinOk = pinInput.value.length === 6;
+      const cityOk = cityInput.value.trim() !== '';
+      const mobileOk = mobileInput.value.length === 10 && /^[6-9]\d{9}$/.test(mobileInput.value);
+      saveBtn.disabled = !(pinOk && cityOk && mobileOk);
+    }
+
+    mobileInput.addEventListener('input', validateForm);
+
+    saveBtn.addEventListener('click', () => {
+      if (saveBtn.disabled) return;
+      addressModal.style.display = 'none';
+      currentLocationDisplay.textContent = `${cityInput.value || 'Anakapalli'}, ${stateInput.value || 'AP'}`;
+      locationPage.style.display = 'none';
+      homeScreen.style.display = 'block';
+    });
+
+    validateForm();
+  </script>
+</body>
+</html>
