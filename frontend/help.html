@@ -1,1 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Help & Support - AAGAM</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
+    body {
+      margin: 0;
+      background: #f5f5f5;
+    }
 
+    /* Header */
+    .header {
+      background: #fff;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .back-btn {
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #333;
+    }
+
+    /* Main Container */
+    .container {
+      padding: 20px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin: 24px 0 12px;
+      color: #222;
+    }
+
+    /* Contact Cards */
+    .contact-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .contact-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #ff3269;
+    }
+    .contact-detail {
+      font-size: 0.95rem;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #444;
+    }
+    .contact-detail i {
+      color: #666;
+      font-size: 1.3rem;
+      width: 28px;
+    }
+    .contact-detail a {
+      color: #ff3269;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .contact-detail a:hover {
+      text-decoration: underline;
+    }
+
+    /* FAQ Section */
+    .faq-item {
+      background: #fff;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .faq-question {
+      padding: 16px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafafa;
+      font-size: 1rem;
+    }
+    .faq-answer {
+      padding: 0 20px 16px;
+      font-size: 0.95rem;
+      color: #555;
+      display: none;
+      line-height: 1.6;
+    }
+    .faq-answer.show {
+      display: block;
+    }
+
+    /* Bottom Safe Area */
+    .bottom-safe {
+      height: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <i class="fas fa-arrow-left back-btn" onclick="history.back()"></i>
+    <span>Help & Support</span>
+  </div>
+
+  <div class="container">
+
+    <h2>Contact Us</h2>
+
+    <div class="contact-card">
+      <div class="contact-title">Call Us</div>
+      <div class="contact-detail">
+        <i class="fas fa-phone-alt"></i>
+        <a href="tel:+919876543210">+91 98765 43210</a>
+      </div>
+      <div class="contact-detail">
+        <i class="fas fa-clock"></i>
+        Available: 7:00 AM – 11:00 PM (Daily)
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-title">Email Support</div>
+      <div class="contact-detail">
+        <i class="fas fa-envelope"></i>
+        <a href="mailto:support@aagam.in">support@aagam.in</a>
+      </div>
+      <div class="contact-detail">
+        <i class="fas fa-reply"></i>
+        We usually reply within 2–4 hours
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-title">Chat with Us</div>
+      <div class="contact-detail">
+        <i class="fab fa-whatsapp"></i>
+        <a href="https://wa.me/919876543210?text=Hello%20AAGAM%20Support%20Team" target="_blank">
+          WhatsApp: +91 98765 43210
+        </a>
+      </div>
+      <div class="contact-detail">
+        <i class="fas fa-comment-dots"></i>
+        Fastest response – usually within 5 minutes
+      </div>
+    </div>
+
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        How long does delivery take? <span>›</span>
+      </div>
+      <div class="faq-answer">
+        In Anakapalli and nearby areas, most orders arrive in 15–35 minutes depending on your location and time of day. Peak hours (lunch/dinner) may take slightly longer.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        What is your delivery radius? <span>›</span>
+      </div>
+      <div class="faq-answer">
+        We currently serve within 25 km radius of Anakapalli town center. Some villages may have limited availability — please check your location during checkout.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Can I cancel or change my order? <span>›</span>
+      </div>
+      <div class="faq-answer">
+        Yes — you can cancel or modify your order within 3 minutes of placing it. After that, please contact support immediately via call or WhatsApp.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        What payment methods do you accept? <span>›</span>
+      </div>
+      <div class="faq-answer">
+        We accept UPI, Credit/Debit Cards, Netbanking, Wallets (PhonePe, Google Pay, Paytm), and Cash on Delivery (limited areas).
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Do you offer refunds? <span>›</span>
+      </div>
+      <div class="faq-answer">
+        Yes — full refund for wrong/missing/damaged items. Please report within 30 minutes of delivery. Refunds are processed within 3–5 business days.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        How do I track my order? <span>›</span>
+      </div>
+      <div class="faq-answer">
+        You’ll receive real-time updates in the app under "My Orders". You can also track live location of your delivery partner.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Safe Area -->
+  <div class="bottom-safe"></div>
+
+  <script>
+    function toggleFAQ(element) {
+      const answer = element.nextElementSibling;
+      answer.classList.toggle('show');
+      const arrow = element.querySelector('span');
+      arrow.innerHTML = answer.classList.contains('show') ? '⌄' : '›';
+    }
+  </script>
+</body>
+</html>
