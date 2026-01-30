@@ -1,515 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AAGAM - Checkout</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/cart.css">
-    <style>
-        /* Additional styles for better UX */
-        .time-slot.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-            background: #f0f0f0;
-            cursor: not-allowed;
-        }
-        .time-slot.selected {
-            border: 2px solid #0c831f;
-            background: #e8f5e9;
-        }
-        .est-time {
-            font-size: 12px;
-            color: #0c831f;
-            margin-top: 4px;
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #0c831f;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .place-order-btn {
-            width: 100%;
-            padding: 14px;
-            background: #0c831f;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-        .place-order-btn:disabled {
-            background: #aaa;
-            cursor: not-allowed;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout - AAGAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+    body { background:#f8f9fa; min-height:100vh; padding-bottom:140px; }
+    .header {
+      background:#fff;
+      padding:14px 16px;
+      font-size:18px;
+      font-weight:700;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      position:sticky;
+      top:0;
+      z-index:100;
+      text-align:center;
+    }
+    .container { padding:16px; max-width:900px; margin:0 auto; }
+    .checkout-grid {
+      display:grid;
+      grid-template-columns:1fr 380px;
+      gap:24px;
+    }
+    @media (max-width:992px) {
+      .checkout-grid { grid-template-columns:1fr; }
+    }
+    .card {
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 4px 16px rgba(0,0,0,.06);
+      margin-bottom:24px;
+      overflow:hidden;
+    }
+    .card-header {
+      padding:16px 20px;
+      font-size:16px;
+      font-weight:700;
+      background:#fafafa;
+      border-bottom:1px solid #eee;
+    }
+    .card-body { padding:20px; }
+    input, textarea, select {
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #ddd;
+      border-radius:10px;
+      margin-bottom:16px;
+      font-size:14px;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color:#ff3269;
+      outline:none;
+      box-shadow:0 0 0 3px rgba(255,50,105,.1);
+    }
+    .address-display {
+      margin-bottom:16px;
+      line-height:1.6;
+    }
+    .address-display strong { color:#333; }
+    .change-address-btn {
+      background:#ff3269;
+      color:white;
+      border:none;
+      padding:10px 20px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .time-slots {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+    .time-slot {
+      padding:12px;
+      border:1px solid #ddd;
+      border-radius:10px;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .time-slot:hover { border-color:#ff3269; background:#fff5f8; }
+    .time-slot.selected {
+      border:2px solid #ff3269;
+      background:#fff0f5;
+      font-weight:600;
+    }
+    .time-slot.disabled {
+      opacity:0.5;
+      pointer-events:none;
+      background:#f5f5f5;
+    }
+    .payment-methods {
+      display:grid;
+      gap:12px;
+      margin-top:12px;
+    }
+    .payment-method {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      border:1px solid #ddd;
+      border-radius:12px;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .payment-method:hover { border-color:#ff3269; background:#fff5f8; }
+    .payment-method.selected {
+      border:2px solid #ff3269;
+      background:#fff0f5;
+    }
+    .payment-icon { font-size:24px; }
+    .bill-row {
+      display:flex;
+      justify-content:space-between;
+      font-size:14px;
+      margin:10px 0;
+    }
+    .bill-total {
+      font-size:18px;
+      font-weight:700;
+      padding-top:12px;
+      border-top:2px dashed #ddd;
+    }
+    .savings-box {
+      background:#e8f5e9;
+      border-radius:12px;
+      padding:16px;
+      margin:20px 0;
+    }
+    .savings-title {
+      color:#2e7d32;
+      font-weight:700;
+      margin-bottom:12px;
+      font-size:16px;
+    }
+    .savings-item {
+      display:flex;
+      justify-content:space-between;
+      font-size:14px;
+      margin:6px 0;
+      color:#2e7d32;
+    }
+    .place-btn {
+      width:100%;
+      padding:16px;
+      background:#ff3269;
+      color:white;
+      border:none;
+      border-radius:12px;
+      font-size:18px;
+      font-weight:700;
+      cursor:pointer;
+      margin-top:20px;
+      box-shadow:0 4px 12px rgba(255,50,105,.2);
+    }
+    .place-btn:disabled {
+      background:#ccc;
+      cursor:not-allowed;
+    }
+    .modal {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .modal-content {
+      background:#fff;
+      border-radius:16px;
+      width:100%;
+      max-width:480px;
+      max-height:90vh;
+      overflow-y:auto;
+      box-shadow:0 10px 40px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      padding:16px 20px;
+      border-bottom:1px solid #eee;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:sticky;
+      top:0;
+      background:#fff;
+      z-index:10;
+    }
+    .close-btn {
+      background:none;
+      border:none;
+      font-size:32px;
+      cursor:pointer;
+      color:#777;
+    }
+    .toast {
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#2e7d32;
+      color:white;
+      padding:12px 24px;
+      border-radius:10px;
+      z-index:1000;
+      box-shadow:0 4px 12px rgba(0,0,0,.2);
+      animation:slideUp 0.4s ease;
+    }
+    @keyframes slideUp {
+      from { transform:translate(-50%,20px); opacity:0; }
+      to { transform:translate(-50%,0); opacity:1; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div id="header-placeholder"></div>
+<div class="header">Checkout</div>
 
-    <div class="checkout-container">
-        <div class="checkout-header">
-            <h1>Checkout</h1>
+<div class="container">
+  <div class="checkout-grid">
+
+    <!-- Left Column -->
+    <div>
+
+      <!-- Delivery Address -->
+      <div class="card">
+        <div class="card-header">Delivery Address</div>
+        <div class="card-body">
+          <div class="address-display">
+            <strong id="addressTypeDisplay">Home</strong><br>
+            <span id="addressText">No address selected yet</span><br>
+            <span id="contactInfo">Contact: Not set</span>
+          </div>
+          <button class="change-address-btn" onclick="openAddressModal()">
+            Change / Add Address
+          </button>
         </div>
+      </div>
 
-        <div class="checkout-content">
-            <div class="checkout-main">
-
-                <!-- Delivery Address -->
-                <div class="checkout-section">
-                    <h2>📍 Delivery Address</h2>
-                    <div class="address-list">
-                        <div class="address-card selected">
-                            <div class="address-header">
-                                <span class="address-type">Home</span>
-                                <button class="edit-btn" onclick="editAddress()">Edit</button>
-                            </div>
-                            <div class="address-details">
-                                <p id="selectedAddress">Loading saved address...</p>
-                                <p class="contact-info">Contact • +91 XXXXXX</p>
-                            </div>
-                        </div>
-                        <button class="add-address-btn" onclick="addNewAddress()">
-                            ➕ Add New Address
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Delivery Time Slots (dynamic) -->
-                <div class="checkout-section">
-                    <h2>⏰ Delivery Time</h2>
-                    <div class="time-slots" id="timeSlots"></div>
-                </div>
-
-                <!-- Payment Methods -->
-                <div class="checkout-section">
-                    <h2>💳 Payment Method</h2>
-                    <div class="payment-methods">
-                        <div class="payment-method selected" data-method="card">
-                            <div class="payment-icon">💳</div>
-                            <div class="payment-details">
-                                <div class="payment-type">Card</div>
-                                <div class="payment-info">Credit / Debit Card</div>
-                            </div>
-                        </div>
-                        <div class="payment-method" data-method="upi">
-                            <div class="payment-icon">📱</div>
-                            <div class="payment-details">
-                                <div class="payment-type">UPI</div>
-                                <div class="payment-info">Google Pay, PhonePe, etc.</div>
-                            </div>
-                        </div>
-                        <div class="payment-method" data-method="cod">
-                            <div class="payment-icon">💵</div>
-                            <div class="payment-details">
-                                <div class="payment-type">Cash on Delivery</div>
-                                <div class="payment-info">Pay when you receive</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Order Notes -->
-                <div class="checkout-section">
-                    <h2>📝 Order Notes</h2>
-                    <textarea placeholder="Any special instructions? (e.g. call before delivery, leave at gate)" id="orderNotes" rows="3"></textarea>
-                </div>
-            </div>
-
-            <!-- Order Summary -->
-            <div class="checkout-sidebar">
-                <div class="order-summary-card">
-                    <h3>Order Summary</h3>
-                    <div class="order-items" id="orderItems"></div>
-                    <div class="order-totals">
-                        <div class="summary-row">
-                            <span>Subtotal</span>
-                            <span id="checkoutSubtotal">₹0</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Delivery Fee</span>
-                            <span id="checkoutDeliveryFee">₹0</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>GST (5%)</span>
-                            <span id="checkoutGst">₹0</span>
-                        </div>
-                        <div class="summary-row total-row">
-                            <span>Total</span>
-                            <span id="checkoutTotal">₹0</span>
-                        </div>
-                    </div>
-                    <button class="place-order-btn" onclick="placeOrder()" id="placeOrderBtn">
-                        Place Order • <span id="finalTotalBtn">₹0</span>
-                    </button>
-                    <div class="order-promise">
-                        <div class="promise-item"><span>🔒</span> Secure</div>
-                        <div class="promise-item"><span>🚚</span> Fast Delivery</div>
-                        <div class="promise-item"><span>⭐</span> Quality</div>
-                    </div>
-                </div>
-            </div>
+      <!-- Delivery Time Slots -->
+      <div class="card">
+        <div class="card-header">Delivery Time</div>
+        <div class="card-body">
+          <div class="time-slots" id="timeSlots">
+            <!-- Time slots populated by JS -->
+          </div>
         </div>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="card">
+        <div class="card-header">Payment Method</div>
+        <div class="card-body">
+          <div class="payment-methods">
+            <div class="payment-method selected" data-method="cod">
+              <i class="fas fa-money-bill-wave"></i>
+              <div>
+                <div class="payment-type">Cash on Delivery</div>
+                <div class="payment-info">Pay when you receive</div>
+              </div>
+            </div>
+            <div class="payment-method" data-method="upi">
+              <i class="fas fa-mobile-alt"></i>
+              <div>
+                <div class="payment-type">UPI</div>
+                <div class="payment-info">Google Pay, PhonePe, etc.</div>
+              </div>
+            </div>
+            <div class="payment-method" data-method="card">
+              <i class="fas fa-credit-card"></i>
+              <div>
+                <div class="payment-type">Card</div>
+                <div class="payment-info">Credit / Debit Card</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPI Section -->
+          <div id="upiSection" style="margin-top:16px;display:none;">
+            <input type="text" id="upiId" placeholder="yourname@okaxis / @ybl / @phonepe">
+            <button style="margin-top:12px;width:100%;padding:12px;background:#ff3269;color:white;border:none;border-radius:10px;cursor:pointer;" onclick="generateUpiQr()">
+              Generate QR & Pay
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Notes -->
+      <div class="card">
+        <div class="card-header">Order Notes (Optional)</div>
+        <div class="card-body">
+          <textarea id="orderNotes" rows="3" placeholder="Any special instructions? (e.g. call before delivery, leave at gate)"></textarea>
+        </div>
+      </div>
     </div>
 
-    <!-- Footer -->
-    <div id="footer-placeholder"></div>
+    <!-- Right Column: Summary -->
+    <div>
+      <div class="card">
+        <div class="card-header">Order Summary</div>
+        <div class="card-body">
+          <div id="orderItems"></div>
+          <div class="bill-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+          <div class="bill-row"><span>Delivery Fee</span><span id="deliveryFee">₹0</span></div>
+          <div class="bill-row"><span>Handling Fee</span><span>FREE</span></div>
+          <div id="discountRow" class="bill-row discount-row" style="display:none;">
+            <span>Discount</span><span>-₹<span id="discountAmount">0</span></span>
+          </div>
+          <div class="bill-total">
+            <span>Total</span>
+            <span id="grandTotal">₹0</span>
+          </div>
 
-    <!-- Address Modal -->
-    <div class="modal" id="addressModal" style="display:none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add / Edit Address</h3>
-                <button class="close-btn" onclick="closeModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="addressForm">
-                    <div class="form-group">
-                        <label>Address Type</label>
-                        <select id="addressType">
-                            <option value="Home">Home</option>
-                            <option value="Work">Work</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Full Address *</label>
-                        <textarea id="fullAddress" rows="3" required placeholder="House no, Street, Area, City - PIN"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Landmark (optional)</label>
-                        <input type="text" id="landmark" placeholder="e.g. Near RTC Complex">
-                    </div>
-                    <div class="form-group">
-                        <label>Contact Name *</label>
-                        <input type="text" id="contactName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Contact Phone *</label>
-                        <input type="tel" id="contactPhone" required pattern="[0-9]{10}">
-                    </div>
-                    <button type="submit" class="save-address-btn">Save Address</button>
-                </form>
-            </div>
+          <div class="savings-box" id="savingsBox" style="display:none;">
+            <div class="savings-title">Savings on this order</div>
+            <div class="savings-item"><span>Discount on MRP</span><span id="mrpDiscount">₹0</span></div>
+            <div class="savings-item"><span>FREE delivery savings</span><span id="deliverySavings">₹0</span></div>
+            <div class="savings-item"><span>Savings on Handling fee</span><span>₹10</span></div>
+          </div>
+
+          <button class="place-btn" id="placeOrderBtn" onclick="placeOrder()">
+            Place Order • ₹<span id="finalTotalBtn">0</span>
+          </button>
         </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script>
-        // ────────────────────────────────────────────────
-        // RAZORPAY INTEGRATION + CHECKOUT LOGIC
-        // ────────────────────────────────────────────────
+<!-- Address Modal -->
+<div class="modal" id="addressModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add / Change Address</h3>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="addressForm">
+        <select id="addressType" required>
+          <option value="Home">Home</option>
+          <option value="Work">Work</option>
+          <option value="Other">Other</option>
+        </select>
+        <textarea id="fullAddress" rows="3" placeholder="House no, Street, Area, Landmark, City - PIN" required></textarea>
+        <input type="text" id="contactName" placeholder="Contact Name" required>
+        <input type="tel" id="contactPhone" placeholder="Contact Phone (10 digits)" pattern="[0-9]{10}" required>
+        <button type="submit" class="place-btn" style="margin-top:20px;">Save Address</button>
+      </form>
+    </div>
+  </div>
+</div>
 
-        // Load Razorpay SDK dynamically
-        function loadRazorpayScript() {
-            return new Promise((resolve) => {
-                if (window.Razorpay) return resolve();
-                const script = document.createElement('script');
-                script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-                script.onload = resolve;
-                script.onerror = () => alert('Failed to load Razorpay. Check internet connection.');
-                document.body.appendChild(script);
-            });
-        }
+<script>
+// ──────────────────────────────────────────────── Cart & Address Logic
+let cart = JSON.parse(localStorage.getItem('aagam_cart') || '[]');
 
-        // Simulated backend order creation (replace with real API call later)
-        async function createRazorpayOrder(amountInPaise) {
-            // In production: fetch('/api/create-razorpay-order', { method: 'POST', body: JSON.stringify({amount}) })
-            // For testing we simulate:
-            return {
-                id: 'order_' + Math.random().toString(36).substring(2, 12),
-                amount: amountInPaise,
-                currency: 'INR',
-                status: 'created'
-            };
-        }
+// Load saved address on page load
+const savedAddr = JSON.parse(localStorage.getItem('aagam_default_address'));
+if (savedAddr) {
+  document.getElementById('addressTypeDisplay').textContent = savedAddr.type;
+  document.getElementById('addressText').textContent = savedAddr.address;
+  document.getElementById('contactInfo').textContent = `Contact • ${savedAddr.phone}`;
+} else {
+  document.getElementById('addressText').textContent = 'Please select or add an address';
+}
 
-        // Main place order function
-        async function placeOrder() {
-            const btn = document.getElementById('placeOrderBtn');
-            btn.disabled = true;
-            btn.textContent = 'Processing...';
+// ──────────────────────────────────────────────── Open / Close Address Modal
+function openAddressModal() {
+  document.getElementById('addressModal').style.display = 'flex';
+  // Pre-fill if editing
+  if (savedAddr) {
+    document.getElementById('addressType').value = savedAddr.type;
+    document.getElementById('fullAddress').value = savedAddr.address;
+    document.getElementById('contactName').value = savedAddr.name || '';
+    document.getElementById('contactPhone').value = savedAddr.phone;
+  }
+}
 
-            const cart = JSON.parse(localStorage.getItem('aagam_cart') || '[]');
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                btn.disabled = false;
-                btn.innerHTML = 'Place Order • <span id="finalTotalBtn">₹0</span>';
-                return;
-            }
+function closeModal() {
+  document.getElementById('addressModal').style.display = 'none';
+}
 
-            const paymentMethod = document.querySelector('.payment-method.selected')?.dataset.method || 'cod';
-            const totalText = document.getElementById('checkoutTotal').textContent.replace('₹','').replace(/,/g,'');
-            const amountInPaise = Math.round(parseFloat(totalText) * 100);
+// ──────────────────────────────────────────────── Save Address
+document.getElementById('addressForm').addEventListener('submit', e => {
+  e.preventDefault();
 
-            const selectedSlotElem = document.querySelector('.time-slot.selected');
-            const deliveryTime = selectedSlotElem ? selectedSlotElem.querySelector('.slot-time').textContent : 'Not selected';
+  const type = document.getElementById('addressType').value;
+  const address = document.getElementById('fullAddress').value.trim();
+  const name = document.getElementById('contactName').value.trim();
+  const phone = document.getElementById('contactPhone').value.trim();
 
-            const orderData = {
-                id: 'ORD-' + Date.now(),
-                items: cart,
-                address: document.getElementById('selectedAddress').textContent,
-                deliveryTime,
-                paymentMethod: paymentMethod.toUpperCase(),
-                notes: document.getElementById('orderNotes').value.trim(),
-                total: `₹${totalText}`,
-                timestamp: new Date().toISOString()
-            };
+  if (!address || !name || !phone || phone.length !== 10) {
+    alert('Please fill all required fields correctly');
+    return;
+  }
 
-            if (paymentMethod === 'cod') {
-                // Cash on Delivery - direct success
-                finalizeOrder(orderData, 'cod');
-                return;
-            }
+  const addressData = { type, address, name, phone };
+  localStorage.setItem('aagam_default_address', JSON.stringify(addressData));
 
-            // Online Payment (Card / UPI) → Razorpay
-            try {
-                await loadRazorpayScript();
+  // Update display
+  document.getElementById('addressTypeDisplay').textContent = type;
+  document.getElementById('addressText').textContent = address;
+  document.getElementById('contactInfo').textContent = `Contact • ${phone}`;
 
-                const razorOrder = await createRazorpayOrder(amountInPaise);
+  closeModal();
+  showToast('Address saved successfully!');
+});
 
-                const options = {
-                    key: 'rzp_test_your_test_key_here',          // ← REPLACE WITH YOUR TEST KEY ID
-                    amount: razorOrder.amount,
-                    currency: razorOrder.currency,
-                    name: 'AAGAM - Quick Commerce',
-                    description: `Order #${orderData.id} - Groceries`,
-                    order_id: razorOrder.id,
-                    image: 'https://via.placeholder.com/128?text=AAGAM', // optional logo
-                    prefill: {
-                        name: document.querySelector('.contact-info').textContent.split('•')[0]?.trim() || '',
-                        contact: document.querySelector('.contact-info').textContent.split('•')[1]?.trim() || ''
-                    },
-                    theme: { color: '#0c831f' },
-                    handler: function (response) {
-                        // Payment successful
-                        orderData.razorpay_payment_id = response.razorpay_payment_id;
-                        orderData.razorpay_order_id   = response.razorpay_order_id;
-                        orderData.razorpay_signature  = response.razorpay_signature;
-                        finalizeOrder(orderData, 'paid');
-                    },
-                    modal: {
-                        ondismiss: function () {
-                            showToast('Payment window closed');
-                            btn.disabled = false;
-                            btn.innerHTML = `Place Order • ₹${totalText}`;
-                        }
-                    }
-                };
+// ──────────────────────────────────────────────── Toast Notification
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
 
-                const rzp = new Razorpay(options);
-                rzp.open();
-
-            } catch (err) {
-                console.error(err);
-                showToast('Payment setup failed. Please try again.');
-                btn.disabled = false;
-                btn.innerHTML = `Place Order • ₹${totalText}`;
-            }
-        }
-
-        function finalizeOrder(orderData, status) {
-            let orders = JSON.parse(localStorage.getItem('aagam_orders') || '[]');
-            orders.push({ ...orderData, status, paymentStatus: status === 'paid' ? 'Success' : 'COD' });
-            localStorage.setItem('aagam_orders', JSON.stringify(orders));
-
-            localStorage.removeItem('aagam_cart');
-
-            const msg = status === 'paid' 
-                ? 'Payment successful! Order placed 🎉' 
-                : 'Order placed successfully (Cash on Delivery)';
-
-            showToast(msg);
-
-            setTimeout(() => {
-                window.location.href = 'orders.html';
-            }, 1800);
-        }
-
-        // ────────────────────────────────────────────────
-        // Existing helper functions (time slots, load data, etc.)
-        // ────────────────────────────────────────────────
-
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMin  = now.getMinutes();
-
-        function formatTime(h, m = 0) {
-            const period = h >= 12 ? 'PM' : 'AM';
-            const hh = h % 12 || 12;
-            return `${hh}:${m.toString().padStart(2,'0')} ${period}`;
-        }
-
-        function generateTimeSlots() {
-            const container = document.getElementById('timeSlots');
-            container.innerHTML = '';
-
-            const slots = [];
-
-            // Fastest available (20–45 min est)
-            if (currentHour < 22) {
-                let startH = currentHour;
-                let startM = currentMin + 20;
-                if (startM >= 60) { startH++; startM -= 60; }
-                const endH = startH + (startM > 30 ? 1 : 2);
-                slots.push({
-                    time: `Now – ${formatTime(endH, startM)}`,
-                    info: `Today • Fastest (~${20 + Math.floor(Math.random()*26)} min est.)`,
-                    disabled: false
-                });
-            }
-
-            if (currentHour < 19) {
-                slots.push({
-                    time: '6:00 PM - 9:00 PM',
-                    info: 'Today • Evening',
-                    disabled: currentHour >= 18
-                });
-            }
-
-            slots.push(
-                { time: '8:00 AM - 11:00 AM', info: 'Tomorrow • Morning', disabled: false },
-                { time: '2:00 PM - 5:00 PM',  info: 'Tomorrow • Afternoon', disabled: false }
-            );
-
-            slots.forEach((s, i) => {
-                const div = document.createElement('div');
-                div.className = 'time-slot' + (s.disabled ? ' disabled' : '');
-                if (i === 0 && !s.disabled) div.classList.add('selected');
-                div.innerHTML = `
-                    <div class="slot-time">${s.time}</div>
-                    <div class="slot-info">${s.info}</div>
-                    ${s.info.includes('min est.') ? '<div class="est-time">Estimated delivery shown</div>' : ''}
-                `;
-                div.addEventListener('click', () => {
-                    if (!s.disabled) {
-                        document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
-                        div.classList.add('selected');
-                    }
-                });
-                container.appendChild(div);
-            });
-        }
-
-        function loadCheckoutData() {
-            const cart = JSON.parse(localStorage.getItem('aagam_cart') || '[]');
-            if (cart.length === 0) {
-                window.location.href = 'cart.html';
-                return;
-            }
-
-            const itemsDiv = document.getElementById('orderItems');
-            itemsDiv.innerHTML = '';
-            let subtotal = 0;
-
-            cart.forEach(item => {
-                const itemTotal = item.price * item.qty;
-                subtotal += itemTotal;
-                const div = document.createElement('div');
-                div.className = 'order-item';
-                div.innerHTML = `
-                    <div class="item-info">
-                        <span class="item-name">${item.name}</span>
-                        <span class="item-qty">×${item.qty}</span>
-                    </div>
-                    <span class="item-price">₹${itemTotal.toLocaleString('en-IN')}</span>
-                `;
-                itemsDiv.appendChild(div);
-            });
-
-            const deliveryFee = subtotal >= 199 ? 0 : 39;
-            const gst = Math.round(subtotal * 0.05);
-            const total = subtotal + deliveryFee + gst;
-
-            document.getElementById('checkoutSubtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
-            document.getElementById('checkoutDeliveryFee').textContent = `₹${deliveryFee}`;
-            document.getElementById('checkoutGst').textContent = `₹${gst.toLocaleString('en-IN')}`;
-            document.getElementById('checkoutTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
-            document.getElementById('finalTotalBtn').textContent = `₹${total.toLocaleString('en-IN')}`;
-        }
-
-        function setupEventListeners() {
-            document.querySelectorAll('.payment-method').forEach(el => {
-                el.addEventListener('click', () => {
-                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
-                    el.classList.add('selected');
-                });
-            });
-
-            document.getElementById('addressForm').addEventListener('submit', e => {
-                e.preventDefault();
-                saveAddress();
-            });
-        }
-
-        function saveAddress() {
-            const address = document.getElementById('fullAddress').value.trim();
-            if (!address) return alert('Please enter full address');
-
-            const type  = document.getElementById('addressType').value;
-            const name  = document.getElementById('contactName').value;
-            const phone = document.getElementById('contactPhone').value;
-            const landmark = document.getElementById('landmark').value.trim();
-
-            const display = landmark ? `${address}, ${landmark}` : address;
-
-            document.getElementById('selectedAddress').textContent = display;
-            document.querySelector('.contact-info').textContent = `${name} • ${phone}`;
-            document.querySelector('.address-type').textContent = type;
-
-            localStorage.setItem('aagam_default_address', JSON.stringify({type, address: display, name, phone}));
-
-            closeModal();
-            showToast('Address saved successfully');
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3200);
-        }
-
-        function closeModal() {
-            document.getElementById('addressModal').style.display = 'none';
-        }
-
-        function addNewAddress() {
-            document.getElementById('addressForm').reset();
-            document.getElementById('addressModal').style.display = 'block';
-        }
-
-        function editAddress() {
-            addNewAddress();
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            generateTimeSlots();
-            loadCheckoutData();
-            setupEventListeners();
-
-            // Load saved address
-            const saved = JSON.parse(localStorage.getItem('aagam_default_address'));
-            if (saved) {
-                document.getElementById('selectedAddress').textContent = saved.address;
-                document.querySelector('.contact-info').textContent = `${saved.name} • ${saved.phone}`;
-                document.querySelector('.address-type').textContent = saved.type;
-            }
-
-            // Preload Razorpay script (optional but improves UX)
-            loadRazorpayScript();
-        });
-    </script>
+// ──────────────────────────────────────────────── Rest of your checkout logic (placeOrder, Razorpay, etc.)
+// ... keep your existing Razorpay + placeOrder + saveOrderAndRedirect code here ...
+// Make sure saveOrderAndRedirect uses the saved address:
+function saveOrderAndRedirect(orderData, paymentStatus) {
+  const savedAddr = JSON.parse(localStorage.getItem('aagam_default_address')) || {};
+  orderData.address = savedAddr.address || 'Not set';
+  // ... rest of your save logic ...
+}
+</script>
 </body>
 </html>
