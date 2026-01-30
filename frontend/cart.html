@@ -1,106 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AAGAM - Shopping Cart</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/cart.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Cart - AAGAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+    body { background:#f8f9fa; min-height:100vh; padding-bottom:140px; }
+    .header {
+      background:#fff;
+      padding:14px 16px;
+      font-size:18px;
+      font-weight:700;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      position:sticky;
+      top:0;
+      z-index:100;
+      text-align:center;
+    }
+    .eta-banner {
+      background:#fff;
+      padding:12px 16px;
+      font-weight:600;
+      color:#ff3269;
+      font-size:15px;
+      border-bottom:1px solid #eee;
+      text-align:center;
+    }
+    .container { padding:16px; }
+    .card {
+      background:#fff;
+      border-radius:16px;
+      margin-bottom:16px;
+      box-shadow:0 4px 12px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .card-header {
+      padding:16px;
+      font-size:15px;
+      font-weight:700;
+      background:#fafafa;
+      border-bottom:1px solid #eee;
+    }
+    .cart-item {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:16px;
+      border-bottom:1px solid #eee;
+    }
+    .cart-item:last-child { border-bottom:none; }
+    .cart-img {
+      width:60px;
+      height:60px;
+      background:#f8f9fa;
+      border-radius:10px;
+      flex-shrink:0;
+      object-fit:cover;
+    }
+    .cart-details { flex:1; }
+    .cart-name { font-size:14px; font-weight:500; line-height:1.4; margin-bottom:4px; }
+    .cart-price { font-size:13px; color:#555; }
+    .qty-control {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#f8f9fa;
+      border-radius:24px;
+      padding:6px 14px;
+      font-weight:600;
+      font-size:15px;
+    }
+    .qty-btn {
+      width:32px;
+      height:32px;
+      background:#ff3269;
+      color:white;
+      border:none;
+      border-radius:50%;
+      font-size:18px;
+      line-height:1;
+      cursor:pointer;
+    }
+    .add-more {
+      padding:16px;
+      color:#ff3269;
+      font-weight:600;
+      text-align:center;
+      cursor:pointer;
+      border-top:1px solid #eee;
+    }
+    .eco-option {
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:14px;
+    }
+    .user-info {
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:14px;
+      background:#fff5f8;
+    }
+    .edit-link { color:#ff3269; font-weight:600; cursor:pointer; }
+    .bill-row { display:flex; justify-content:space-between; font-size:14px; margin:8px 0; }
+    .bill-total {
+      font-size:16px;
+      font-weight:700;
+      padding-top:12px;
+      border-top:1px dashed #ddd;
+    }
+    .savings-box {
+      background:#e8f5e9;
+      border-radius:12px;
+      padding:12px;
+      margin:16px 0;
+    }
+    .savings-title {
+      color:#2e7d32;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .savings-item {
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      margin:4px 0;
+      color:#2e7d32;
+    }
+    .place-btn {
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
+      background:#ff3269;
+      color:#fff;
+      border:none;
+      padding:16px;
+      font-size:17px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 -4px 12px rgba(0,0,0,.1);
+      z-index:100;
+      text-align:center;
+    }
+  </style>
 </head>
 <body>
-    <!-- Header Component -->
-    <div id="header-placeholder"></div>
 
-    <div class="cart-container">
-        <div class="cart-header">
-            <h1>My Cart</h1>
-            <span class="cart-count" id="cartCount">0 items</span>
-        </div>
+<div class="header">My Cart</div>
 
-        <div class="cart-content">
-            <!-- Empty Cart State -->
-            <div class="empty-cart" id="emptyCart">
-                <div class="empty-cart-icon">🛒</div>
-                <h2>Your cart is empty</h2>
-                <p>Add some delicious groceries to get started!</p>
-                <a href="index.html" class="shop-now-btn">Start Shopping</a>
-            </div>
+<div class="eta-banner">
+  ⚡ Delivery in 6–12 mins
+</div>
 
-            <!-- Cart Items -->
-            <div class="cart-items" id="cartItems" style="display: none;">
-                <div class="cart-item" id="cartItemTemplate" style="display: none;">
-                    <div class="item-image">
-                        <img src="" alt="" id="itemImage">
-                    </div>
-                    <div class="item-details">
-                        <h3 id="itemName"></h3>
-                        <p class="item-weight" id="itemWeight"></p>
-                        <div class="item-price">
-                            <span class="current-price" id="itemPrice"></span>
-                            <span class="original-price" id="itemMrp"></span>
-                            <span class="discount" id="itemOff"></span>
-                        </div>
-                    </div>
-                    <div class="item-controls">
-                        <div class="quantity-controls">
-                            <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
-                            <span class="quantity" id="itemQuantity">1</span>
-                            <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
-                        </div>
-                        <button class="remove-btn" onclick="removeItem(this)">Remove</button>
-                    </div>
-                </div>
-            </div>
+<div class="container">
 
-            <!-- Cart Summary -->
-            <div class="cart-summary" id="cartSummary" style="display: none;">
-                <div class="summary-header">
-                    <h3>Order Summary</h3>
-                </div>
+  <!-- Cart Items -->
+  <div class="card">
+    <div class="card-header">Items (<span id="cartCount">0</span>)</div>
+    <div id="cartItems"></div>
+    <div class="add-more" onclick="window.location.href='index.html'">+ Add More Items</div>
+  </div>
 
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span id="subtotal">₹0</span>
-                </div>
-
-                <div class="summary-row">
-                    <span>Delivery Fee</span>
-                    <span id="deliveryFee">₹30</span>
-                </div>
-
-                <div class="summary-row">
-                    <span>GST</span>
-                    <span id="gst">₹0</span>
-                </div>
-
-                <div class="summary-row total-row">
-                    <span>Total</span>
-                    <span id="total">₹0</span>
-                </div>
-
-                <div class="checkout-section">
-                    <button class="checkout-btn" onclick="proceedToCheckout()">
-                        Proceed to Checkout
-                    </button>
-                    <p class="delivery-info">
-                        🚚 Free delivery on orders above ₹500
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Continue Shopping -->
-        <div class="continue-shopping" id="continueShopping" style="display: none;">
-            <a href="index.html" class="continue-btn">Continue Shopping</a>
-        </div>
+  <!-- Paper Bag Option -->
+  <div class="card eco-option">
+    <div>
+      <strong>I don't need a paper bag!</strong><br>
+      <small>Opt in to save paper</small>
     </div>
+    <input type="checkbox" checked style="width:24px;height:24px;">
+  </div>
 
-    <!-- Footer Component -->
-    <div id="footer-placeholder"></div>
+  <!-- User Info -->
+  <div class="card user-info">
+    <div>
+      Ordering for <strong>balu, 8179315170</strong>
+    </div>
+    <span class="edit-link" onclick="alert('Edit user details')">Edit</span>
+  </div>
 
-    <script src="components/header.js"></script>
-    <script src="components/footer.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/api.js"></script>
+  <!-- Bill Summary -->
+  <div class="card">
+    <div class="card-header">Bill Summary</div>
+    <div class="card-body">
+      <div class="bill-row"><span>Item Total</span><span id="itemTotal">₹0</span></div>
+      <div class="bill-row"><span>Handling Fee</span><span>₹10 → <strong>FREE</strong></span></div>
+      <div class="bill-row"><span>Delivery Fee</span><span id="deliveryFee">₹0</span></div>
+      <div class="bill-total">
+        <span>To Pay</span>
+        <span id="grandTotal">₹0</span>
+      </div>
+
+      <div class="savings-box" id="savingsBox" style="display:none;">
+        <div class="savings-title">Savings on this order</div>
+        <div class="savings-item">
+          <span>Discount on MRP</span>
+          <span id="mrpDiscount">₹0</span>
+        </div>
+        <div class="savings-item">
+          <span>FREE delivery savings</span>
+          <span id="deliverySavings">₹0</span>
+        </div>
+        <div class="savings-item">
+          <span>Savings on Handling fee</span>
+          <span id="handlingSavings">₹10</span>
+        </div>
+        <div class="savings-item">
+          <span>Total savings</span>
+          <span id="totalSavings">₹0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Place Order -->
+  <button class="place-btn" onclick="proceedToCheckout()">
+    Click to Pay ₹<span id="finalPayAmount">0</span>
+  </button>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────── Cart Management (localStorage)
+function getCart() {
+  return JSON.parse(localStorage.getItem('aagamCart')) || [];
+}
+
+function saveCart(cart) {
+  localStorage.setItem('aagamCart', JSON.stringify(cart));
+  renderCart();
+  updateBill();
+}
+
+function addToCart(product) {
+  let cart = getCart();
+  const existing = cart.find(item => item.name === product.name);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+  saveCart(cart);
+  alert(`${product.name} added to cart!`);
+}
+
+function updateQty(name, change) {
+  let cart = getCart();
+  const itemIndex = cart.findIndex(i => i.name === name);
+  if (itemIndex !== -1) {
+    cart[itemIndex].qty = Math.max(1, (cart[itemIndex].qty || 1) + change);
+    if (cart[itemIndex].qty === 1 && change === -1) {
+      cart.splice(itemIndex, 1); // Remove if qty becomes 0
+    }
+    saveCart(cart);
+  }
+}
+
+function removeItem(name) {
+  let cart = getCart();
+  cart = cart.filter(i => i.name !== name);
+  saveCart(cart);
+}
+
+// ──────────────────────────────────────────────── Render Cart
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  const cart = getCart();
+  container.innerHTML = "";
+
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px;color:#777;">
+        <div style="font-size:60px;margin-bottom:16px;">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p>Add some groceries to get started!</p>
+        <a href="index.html" style="color:#ff3269;text-decoration:none;font-weight:600;">Start Shopping →</a>
+      </div>
+    `;
+    document.getElementById("cartCount").innerText = "0 items";
+    return;
+  }
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.qty;
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      <div class="cart-img">${item.name.charAt(0)}</div>
+      <div class="cart-details">
+        <div class="cart-name">${item.name}</div>
+        <div class="cart-price">₹${item.price} × ${item.qty}</div>
+      </div>
+      <div class="qty-control">
+        <button class="qty-btn" onclick="updateQty('${item.name}', -1)">-</button>
+        <span>${item.qty}</span>
+        <button class="qty-btn" onclick="updateQty('${item.name}', 1)">+</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById("cartCount").innerText = `${cart.length} items`;
+}
+
+// ──────────────────────────────────────────────── Update Bill Summary
+function updateBill() {
+  const cart = getCart();
+  let subtotal = 0;
+  cart.forEach(item => {
+    subtotal += item.price * item.qty;
+  });
+
+  const delivery = subtotal >= 500 ? 0 : 30; // Free delivery above ₹500
+  const handling = 10;
+  const grand = subtotal + delivery + handling;
+
+  document.getElementById("itemTotal").innerText = `₹${subtotal}`;
+  document.getElementById("deliveryFee").innerText = delivery === 0 ? "FREE" : `₹${delivery}`;
+  document.getElementById("grandTotal").innerText = `₹${grand}`;
+  document.getElementById("finalPayAmount").innerText = grand;
+
+  // Savings box
+  const savingsBox = document.getElementById("savingsBox");
+  if (delivery === 0 || handling === 0) {
+    savingsBox.style.display = "block";
+    document.getElementById("deliverySavings").innerText = delivery === 0 ? "₹30" : "₹0";
+    document.getElementById("handlingSavings").innerText = handling === 0 ? "₹10" : "₹0";
+    document.getElementById("totalSavings").innerText = (delivery === 0 ? 30 : 0) + (handling === 0 ? 10 : 0);
+  } else {
+    savingsBox.style.display = "none";
+  }
+}
+
+// ──────────────────────────────────────────────── Proceed to Checkout
+function proceedToCheckout() {
+  const cart = getCart();
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+  window.location.href = "checkout.html";
+}
+
+// ──────────────────────────────────────────────── Init on load
+window.onload = () => {
+  renderCart();
+  updateBill();
+};
+</script>
 </body>
 </html>
