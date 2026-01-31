@@ -1,3 +1,32 @@
 {
-  "orders": []
+  "orders": [
+    {
+      "id": "ORD1769789761668164",
+      "userId": 1769789761505,
+      "customer": "Test User",
+      "items": [
+        {
+          "productId": 1,
+          "name": "Test Product",
+          "price": 100,
+          "quantity": 1
+        }
+      ],
+      "total": 100,
+      "status": "out_for_delivery",
+      "paymentMethod": "cod",
+      "address": {
+        "street": "123 Test St"
+      },
+      "createdAt": "2026-01-30T16:16:01.668Z",
+      "updatedAt": "2026-01-30T16:16:01.681Z",
+      "delivery": {
+        "status": "out_for_delivery",
+        "location": {
+          "lat": 12.34,
+          "lng": 56.78
+        }
+      }
+    }
+  ]
 }

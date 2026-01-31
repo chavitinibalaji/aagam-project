@@ -10,6 +10,9 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const inventoryRoutes = require('./routes/inventory');
+const cartRoutes = require('./routes/cart');
+const deliveryRoutes = require('./routes/delivery');
+const userRoutes = require('./routes/user');
 
 // Import middleware
 const { authenticate: authMiddleware } = require('./middleware/auth');
@@ -41,6 +44,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/delivery', deliveryRoutes);
+app.use('/api/user', userRoutes);
 
 // Protected admin routes
 app.use('/api/admin', authMiddleware);

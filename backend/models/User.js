@@ -12,6 +12,13 @@ class User {
         this.role = data.role || 'customer'; // customer, admin
         this.status = data.status || 'active'; // active, inactive, suspended
         this.address = data.address || {};
+        this.notifications = data.notifications || {
+            orderUpdates: true,
+            promotionalOffers: false,
+            deliveryAlerts: true,
+            weeklyNewsletter: false,
+            smsNotifications: true
+        };
         this.createdAt = data.createdAt || new Date();
         this.updatedAt = new Date();
         this.lastLogin = data.lastLogin || null;
@@ -110,6 +117,7 @@ class User {
             role: this.role,
             status: this.status,
             address: this.address,
+            notifications: this.notifications,
             createdAt: this.createdAt,
             lastLogin: this.lastLogin
         };
@@ -126,6 +134,7 @@ class User {
             role: this.role,
             status: this.status,
             address: this.address,
+            notifications: this.notifications,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             lastLogin: this.lastLogin

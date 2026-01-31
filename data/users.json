@@ -1,3 +1,24 @@
 {
-  "users": []
+  "users": [
+    {
+      "id": 1769789761505,
+      "name": "Test User",
+      "email": "testuser@example.com",
+      "phone": "+911234567890",
+      "password": "$2a$10$Qv8Ku1RnB9qpY9WzFm0B5eHSTwTCCcAk6lPX/m1yy6Q3tdjUb3h2S",
+      "role": "customer",
+      "status": "active",
+      "address": {},
+      "notifications": {
+        "orderUpdates": true,
+        "promotionalOffers": false,
+        "deliveryAlerts": true,
+        "weeklyNewsletter": false,
+        "smsNotifications": true
+      },
+      "createdAt": "2026-01-30T16:16:01.505Z",
+      "updatedAt": "2026-01-30T16:16:01.505Z",
+      "lastLogin": null
+    }
+  ]
 }

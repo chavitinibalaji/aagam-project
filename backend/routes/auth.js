@@ -206,4 +206,67 @@ router.put('/change-password', authenticate, async (req, res) => {
     }
 });
 
+// Also accept POST from frontend (some clients use POST)
+router.post('/change-password', authenticate, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        const usersData = db.getUsers();
+        const userIndex = usersData.users.findIndex(u => u.id === req.user.userId);
+
+        if (userIndex === -1) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = new User(usersData.users[userIndex]);
+
+        // Verify current password
+        const isValid = await user.verifyPassword(currentPassword);
+        if (!isValid) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        // Set new password
+        user.password = newPassword;
+        await user.hashPassword();
+
+        // Save
+        usersData.users[userIndex] = user.toJSON();
+        db.saveUsers(usersData);
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Password change error (POST):', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Update notification preferences
+router.put('/notifications', authenticate, async (req, res) => {
+    try {
+        const prefs = req.body;
+
+        const usersData = db.getUsers();
+        const userIndex = usersData.users.findIndex(u => u.id === req.user.userId);
+
+        if (userIndex === -1) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = new User(usersData.users[userIndex]);
+
+        // Update notifications (only keys present in prefs)
+        user.notifications = { ...user.notifications, ...prefs };
+
+        // Save
+        usersData.users[userIndex] = user.toJSON();
+        db.saveUsers(usersData);
+
+        res.json({ message: 'Notification preferences updated', notifications: user.notifications });
+    } catch (error) {
+        console.error('Notifications update error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 module.exports = router;

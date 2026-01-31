@@ -12,7 +12,8 @@ const authenticate = (req, res, next) => {
             ? authHeader.substring(7)
             : null;
 
-        if (!token) {
+        // Treat explicit 'null' or 'undefined' strings as no token (frontend may store tokens under different keys)
+        if (!token || token === 'null' || token === 'undefined') {
             return res.status(401).json({ message: 'Access denied. No token provided.' });
         }
 
