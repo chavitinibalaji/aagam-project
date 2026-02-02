@@ -88,5 +88,26 @@ router.post('/verify', authMiddleware, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error during verification' });
   }
 });
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const shasum = crypto.createHmac('sha256', secret);
+  shasum.update(req.body);
+  const digest = shasum.digest('hex');
 
+  if (digest === req.headers['x-razorpay-signature']) {
+    const event = JSON.parse(req.body.toString());
+
+    if (event.event === 'payment.captured') {
+      // Update order status to Paid in MySQL
+      const payment = event.payload.payment.entity;
+      const orderId = payment.order_id;
+      // Your logic: UPDATE orders SET payment_status = 'Paid', ... WHERE razorpay_order_id = ?
+      console.log('Payment captured:', payment.id);
+    }
+
+    res.status(200).send('Webhook received');
+  } else {
+    res.status(400).send('Invalid signature');
+  }
+});
 module.exports = router;
