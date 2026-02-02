@@ -5,11 +5,11 @@ const authMiddleware = require('../middleware/auth');
 
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const [addresses] = await pool.query(
+    const [address] = await pool.query(
       'SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC',
       [req.userId]
     );
-    res.json({ success: true, count: addresses.length, data: addresses });
+    res.json({ success: true, count: address.length, data: address });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
