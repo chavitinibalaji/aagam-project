@@ -5,13 +5,17 @@ const path = require('path');
 const WebSocket = require('ws');
 const http = require('http');
 
-// Import routes
+// Import routes (assuming these files exist in ./routes/)
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const inventoryRoutes = require('./routes/inventory');
-
-// Import middleware
+const payment.routes = require('./routes/payment.routes');
+const addresse.routes = require('./routes/addresse.routes');
+const profile.routes = require('./routes/profile.routes');
+const inventoryRoutes = require('./routes/inventory');
+const cart.routes = require('./routes/cartroutes');
+// Import middlewatre
 const { authenticate: authMiddleware } = require('./middleware/auth');
 
 const app = express();
@@ -41,9 +45,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/addresse.routes', addresse.routes);
+app.use('/api/cart.routes', cart.routes);
+app.use('/api/payment.routes', payment.routes);
+app.use('/api/profile.routes', profile.routes);
 
 // Protected admin routes
 app.use('/api/admin', authMiddleware);
+
 app.get('/api/admin/dashboard', (req, res) => {
     // Mock dashboard data
     res.json({
@@ -68,7 +77,7 @@ app.get('/api/admin/dashboard', (req, res) => {
 
 // Serve frontend
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/login.html'));
 });
 
 // Serve admin
@@ -88,7 +97,6 @@ app.get('/delivery-app/driver.html', (req, res) => {
 // WebSocket connection handling
 wss.on('connection', (ws, req) => {
     console.log('New WebSocket connection established');
-
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message.toString());
@@ -97,7 +105,6 @@ wss.on('connection', (ws, req) => {
             console.error('Error parsing WebSocket message:', error);
         }
     });
-
     ws.on('close', () => {
         console.log('WebSocket connection closed');
         // Remove client from active connections
@@ -109,11 +116,9 @@ wss.on('connection', (ws, req) => {
             }
         }
     });
-
     ws.on('error', (error) => {
         console.error('WebSocket error:', error);
     });
-
     // Send welcome message
     ws.send(JSON.stringify({
         type: 'connected',
@@ -124,7 +129,6 @@ wss.on('connection', (ws, req) => {
 // Handle WebSocket messages
 function handleWebSocketMessage(ws, data) {
     console.log('Received WebSocket message:', data.type);
-
     switch (data.type) {
         case 'rider_auth':
             handleRiderAuth(ws, data);
@@ -171,13 +175,11 @@ function handleWebSocketMessage(ws, data) {
 function handleRiderAuth(ws, data) {
     const riderId = data.riderId || `rider_${Date.now()}`;
     clients.set(riderId, { ws, riderId, status: 'offline', lastSeen: Date.now() });
-
     ws.send(JSON.stringify({
         type: 'auth_success',
         riderId: riderId,
         status: 'offline'
     }));
-
     console.log(`Rider ${riderId} authenticated`);
 }
 
@@ -190,7 +192,6 @@ function handleLocationUpdate(ws, data) {
             timestamp: Date.now(),
             riderId: rider.riderId
         });
-
         // Broadcast location to admin dashboard if needed
         broadcastToAdmins({
             type: 'rider_location_update',
@@ -206,21 +207,18 @@ function handleStatusChange(ws, data) {
     if (rider) {
         rider.status = data.status;
         rider.lastSeen = Date.now();
-
         // Notify admin of status change
         broadcastToAdmins({
             type: 'rider_status_change',
             riderId: rider.riderId,
             status: data.status
         });
-
         // Confirm status change to rider
         ws.send(JSON.stringify({
             type: 'status_update',
             status: data.status,
             timestamp: Date.now()
         }));
-
         // If rider goes online, send available deliveries
         if (data.status === 'online') {
             sendAvailableDeliveries(ws);
@@ -238,20 +236,17 @@ function handleAcceptDelivery(ws, data) {
             status: 'accepted',
             acceptedAt: Date.now()
         });
-
         // Notify rider
         ws.send(JSON.stringify({
             type: 'delivery_accepted',
             deliveryId: data.deliveryId
         }));
-
         // Notify admin
         broadcastToAdmins({
             type: 'delivery_accepted',
             deliveryId: data.deliveryId,
             riderId: rider.riderId
         });
-
         // Simulate delivery progress updates
         simulateDeliveryProgress(data.deliveryId, rider.riderId);
     }
@@ -267,14 +262,12 @@ function handleCompleteDelivery(ws, data) {
             delivery.status = 'completed';
             delivery.completedAt = Date.now();
         }
-
         // Notify rider
         ws.send(JSON.stringify({
             type: 'delivery_completed',
             deliveryId: data.deliveryId,
             earnings: Math.floor(Math.random() * 100) + 50 // Mock earnings
         }));
-
         // Notify admin
         broadcastToAdmins({
             type: 'delivery_completed',
@@ -355,7 +348,6 @@ function generateMockDeliveries() {
         [{ name: 'Rice Pack', quantity: 1 }, { name: 'Cooking Oil', quantity: 1 }],
         [{ name: 'Snacks Pack', quantity: 5 }, { name: 'Soft Drinks', quantity: 2 }]
     ];
-
     for (let i = 0; i < 3; i++) {
         const deliveryId = `ORD${Date.now()}${i}`;
         deliveries.push({
@@ -368,7 +360,6 @@ function generateMockDeliveries() {
             customerPhone: '+91' + Math.floor(Math.random() * 9000000000 + 1000000000)
         });
     }
-
     return deliveries;
 }
 
@@ -376,7 +367,6 @@ function generateMockDeliveries() {
 function simulateDeliveryProgress(deliveryId, riderId) {
     const stages = ['picked_up', 'out_for_delivery', 'arrived'];
     let currentStage = 0;
-
     const progressInterval = setInterval(() => {
         if (currentStage < stages.length) {
             const rider = Array.from(clients.values()).find(c => c.riderId === riderId);
@@ -399,13 +389,11 @@ function simulateDeliveryProgress(deliveryId, riderId) {
 function handleAdminAuth(ws, data) {
     const adminId = data.adminId || `admin_${Date.now()}`;
     clients.set(adminId, { ws, adminId, type: 'admin', lastSeen: Date.now() });
-
     ws.send(JSON.stringify({
         type: 'admin_auth_success',
         adminId: adminId,
         message: 'Admin authenticated successfully'
     }));
-
     console.log(`Admin ${adminId} authenticated`);
 }
 
@@ -418,7 +406,6 @@ function handleProductStockChanged(ws, data) {
         newStock: data.newStock,
         adjustment: data.adjustment || 0
     });
-
     console.log(`Product ${data.productId} stock changed to ${data.newStock}`);
 }
 
@@ -429,7 +416,6 @@ function handleInventoryUpdated(ws, data) {
         type: 'inventory_updated',
         inventory: data.inventory
     });
-
     console.log('Inventory updated and broadcasted to all clients');
 }
 
@@ -474,7 +460,6 @@ setInterval(() => {
             console.log(`Removed inactive rider: ${id}`);
         }
     }
-
     // Send earnings updates to online riders
     for (const [id, client] of clients.entries()) {
         if (client.status === 'online' && client.ws.readyState === WebSocket.OPEN) {
@@ -483,7 +468,6 @@ setInterval(() => {
                 week: Math.floor(Math.random() * 3000) + 5000,
                 month: Math.floor(Math.random() * 12000) + 20000
             };
-
             client.ws.send(JSON.stringify({
                 type: 'earnings_update',
                 earnings: earnings
