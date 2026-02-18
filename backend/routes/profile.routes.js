@@ -1,33 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db/connection');
-const authMiddleware = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
+const db = require('../models');
+const { User } = db;
 
-router.get('/', authMiddleware, async (req, res) => {
+// GET /api/profile - Get user profile
+router.get('/', protect, async (req, res) => {
   try {
-    const [users] = await pool.query(
-      'SELECT id, name, email, phone FROM users WHERE id = ?',
-      [req.userId]
-    );
-    if (users.length === 0) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-    res.json({ success: true, user: users[0] });
+    const user = await User.findByPk(req.user.id, {
+      attributes: ['id', 'name', 'email', 'phone', 'avatar', 'addresses', 'location'],
+    });
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json(user);
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.put('/', authMiddleware, async (req, res) => {
-  const { name, phone } = req.body;
+// PUT /api/profile - Update profile
+router.put('/', protect, async (req, res) => {
+  const { name, phone, avatar, addresses, location } = req.body;
+
   try {
-    await pool.query(
-      'UPDATE users SET name = ?, phone = ? WHERE id = ?',
-      [name, phone, req.userId]
-    );
-    res.json({ success: true, message: 'Profile updated' });
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    await user.update({
+      name: name || user.name,
+      phone: phone || user.phone,
+      avatar: avatar || user.avatar,
+      addresses: addresses || user.addresses,
+      location: location || user.location,
+    });
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      avatar: user.avatar,
+      addresses: user.addresses,
+      location: user.location,
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update profile' });
   }
 });
 
