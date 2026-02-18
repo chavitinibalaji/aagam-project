@@ -4,14 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AAGAM – Register</title>
-
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f6f8;
     }
-
     header {
       background: #ccff99;
       padding: 15px;
@@ -19,14 +17,12 @@
       justify-content: center;
       align-items: center;
     }
-
     header h1 {
       display: flex;
       align-items: center;
       gap: 12px;
       margin: 0;
     }
-
     .register-box {
       background: #fff;
       max-width: 400px;
@@ -35,30 +31,30 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.12);
     }
-
     h2 {
       text-align: center;
       margin-bottom: 20px;
     }
-
     .form-group {
       margin-bottom: 16px;
+      position: relative;
     }
-
     label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
     }
-
     input {
       width: 100%;
       padding: 10px;
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
+      box-sizing: border-box;
     }
-
+    input:invalid:focus, input:focus:invalid {
+      border-color: #dc3545;
+    }
     button {
       width: 100%;
       padding: 14px;
@@ -69,7 +65,9 @@
       font-weight: 600;
       cursor: pointer;
     }
-
+    button:hover {
+      background: #7a1ecc;
+    }
     .message {
       margin-top: 12px;
       padding: 10px;
@@ -77,9 +75,53 @@
       text-align: center;
       display: none;
     }
-
     .success { background: #d4edda; color: #155724; }
-    .error { background: #f8d7da; color: #721c24; }
+    .error   { background: #f8d7da; color: #721c24; }
+
+    .password-wrapper {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.4em;
+      color: #555;
+      user-select: none;
+    }
+    .toggle-password:hover {
+      color: #8b2be2;
+    }
+
+    .strength-container {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .strength-bar {
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease, background-color 0.4s ease;
+    }
+    .strength-text {
+      font-size: 13px;
+      font-weight: 500;
+      text-align: right;
+    }
+    .very-weak  { background: #ff4d4d; width: 20%; }
+    .weak       { background: #ffa726; width: 40%; }
+    .medium     { background: #ffca28; width: 60%; }
+    .strong     { background: #66bb6a; width: 80%; }
+    .very-strong{ background: #43a047; width: 100%; }
 
     .aagam-info {
       max-width: 900px;
@@ -87,20 +129,17 @@
       padding: 0 20px;
       text-align: center;
     }
-
     .info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
       gap: 20px;
     }
-
     .info-card {
       background: #fff;
       padding: 20px;
       border-radius: 14px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.08);
     }
-
     footer {
       background: #fff;
       text-align: center;
@@ -111,52 +150,57 @@
     }
   </style>
 </head>
-
 <body>
 
 <header>
   <h1>
-    <img src="https://raw.githubusercontent.com/chavitinibalaji/aagam-assets/main/IMG_AAGAM.png" width="70" />
+    <img src="https://raw.githubusercontent.com/chavitinibalaji/aagam-assets/main/IMG_AAGAM.png" width="70" alt="AAGAM Logo" />
     AAGAM
   </h1>
 </header>
 
 <div class="register-box">
-
   <h2>Register for AAGAM</h2>
 
   <div class="form-group">
-    <label>Name</label>
-    <input type="text" id="name" placeholder="Your full name" />
+    <label for="name">Full Name</label>
+    <input type="text" id="name" placeholder="Your full name" required autocomplete="name" />
   </div>
 
   <div class="form-group">
-    <label>Email</label>
-    <input type="email" id="email" placeholder="your@email.com" />
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="your@email.com" required autocomplete="email" />
   </div>
 
   <div class="form-group">
-    <label>Phone</label>
-    <input type="tel" id="phone" placeholder="Your phone number" />
+    <label for="phone">Phone (Indian mobile)</label>
+    <input type="tel" id="phone" placeholder="e.g. 9876543210 or +919876543210" required autocomplete="tel" />
   </div>
 
   <div class="form-group">
-    <label>Password</label>
-    <input type="password" id="password" placeholder="Create a password" />
+    <label for="password">Password</label>
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Create a strong password" required autocomplete="new-password" />
+      <span class="toggle-password" id="togglePassword">👁️</span>
+    </div>
+    <div class="strength-container">
+      <div class="strength-bar">
+        <div id="strength-fill" class="strength-fill"></div>
+      </div>
+      <div id="strength-text" class="strength-text">No password</div>
+    </div>
   </div>
 
   <button onclick="register()">Register</button>
   <div id="register-msg" class="message"></div>
 
   <p style="text-align: center; margin-top: 20px;">
-    Already have an account? <a href="login.html" style="color: #8b2be2;">Login here</a>
+    Already have an account? <a href="login.html" style="color: #8b2be2; text-decoration: none;">Login here</a>
   </p>
-
 </div>
 
 <section class="aagam-info">
   <h2>Why Choose AAGAM?</h2>
-
   <div class="info-grid">
     <div class="info-card">⚡ 10-Minute Delivery</div>
     <div class="info-card">🥬 Fresh & Trusted</div>
@@ -168,50 +212,126 @@
 <footer>© 2026 AAGAM. All rights reserved.</footer>
 
 <script>
-  function showMessage(id, msg, error) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.className = "message " + (error ? "error" : "success");
-    el.style.display = "block";
+// ── Password visibility toggle ────────────────────────────────
+const passwordInput = document.getElementById("password");
+const toggleBtn = document.getElementById("togglePassword");
+
+toggleBtn.addEventListener("click", () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleBtn.textContent = "🙈";
+  } else {
+    passwordInput.type = "password";
+    toggleBtn.textContent = "👁️";
+  }
+});
+
+// ── Strength meter ─────────────────────────────────────────────
+const fillBar = document.getElementById("strength-fill");
+const textEl  = document.getElementById("strength-text");
+
+const strengthLevels = [
+  { text: "Very Weak",   class: "very-weak"  },
+  { text: "Weak",        class: "weak"       },
+  { text: "Medium",      class: "medium"     },
+  { text: "Strong",      class: "strong"     },
+  { text: "Very Strong", class: "very-strong"}
+];
+
+function updateStrength() {
+  const pass = passwordInput.value;
+  if (!pass) {
+    fillBar.style.width = "0%";
+    textEl.textContent = "No password";
+    textEl.style.color = "#666";
+    return;
   }
 
-  async function register() {
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const password = document.getElementById("password").value.trim();
+  let score = 0;
+  if (pass.length >= 8) score++;
+  if (pass.length >= 12) score++;
+  if (/[a-z]/.test(pass)) score++;
+  if (/[A-Z]/.test(pass)) score++;
+  if (/[0-9]/.test(pass)) score++;
+  if (/[^a-zA-Z0-9]/.test(pass)) score++;
 
-    if (!name || !email || !phone || !password) {
-      showMessage("register-msg", "Please fill all fields", true);
-      return;
-    }
+  score = Math.min(4, score);
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, email, phone, password })
-      });
+  const level = strengthLevels[score];
+  fillBar.className = "strength-fill " + level.class;
+  fillBar.style.width = (score * 25) + "%";
+  textEl.textContent = level.text;
+  textEl.style.color = score <= 1 ? "#d32f2f" : score <= 2 ? "#f57c00" : "#2e7d32";
+}
 
-      const data = await response.json();
+passwordInput.addEventListener("input", updateStrength);
 
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        showMessage("register-msg", "Registration successful!", false);
-        setTimeout(() => window.location.href = 'index.html', 1200);
-      } else {
-        showMessage("register-msg", data.message || "Registration failed", true);
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      showMessage("register-msg", "Network error. Please try again.", true);
-    }
+// ── Registration handler ───────────────────────────────────────
+function showMessage(msg, isError = true) {
+  const el = document.getElementById("register-msg");
+  el.textContent = msg;
+  el.className = "message " + (isError ? "error" : "success");
+  el.style.display = "block";
+}
+
+async function register() {
+  const name     = document.getElementById("name").value.trim();
+  const email    = document.getElementById("email").value.trim();
+  const phone    = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+
+  document.getElementById("register-msg").style.display = "none";
+
+  // 1. Required fields & basic format
+  if (!name)                 { showMessage("Please enter your full name"); return; }
+  if (name.length < 2)       { showMessage("Name must be at least 2 characters"); return; }
+
+  if (!email)                { showMessage("Please enter your email"); return; }
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    showMessage("Please enter a valid email address"); return;
   }
+
+  if (!phone)                { showMessage("Please enter your phone number"); return; }
+  if (!/^(?:(?:\+|0{1,2})?91[\s-]?)?[6789]\d{9}$/.test(phone.replace(/\s+/g, ''))) {
+    showMessage("Please enter a valid 10-digit Indian mobile number"); return;
+  }
+
+  if (!password)             { showMessage("Please create a password"); return; }
+
+  // 2. Similarity check (this is why "balaji@8179" is rejected)
+  const lowerPass = password.toLowerCase();
+  const namePart  = name.toLowerCase().split(' ')[0];
+  const emailPart = email.split('@')[0].toLowerCase();
+  const phoneLast = phone.replace(/[^0-9]/g, '').slice(-6);
+
+  if (lowerPass.includes(namePart) || lowerPass.includes(emailPart) || lowerPass.includes(phoneLast)) {
+    showMessage("Password should not be similar to your name, email, or phone number");
+    return;
+  }
+
+  // 3. Send to server
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      showMessage("Registration successful! Redirecting...", false);
+      setTimeout(() => window.location.href = 'index.html', 1200);
+    } else {
+      showMessage(data.message || "Registration failed – email may already exist", true);
+    }
+  } catch (err) {
+    console.error('Registration error:', err);
+    showMessage("Network error. Please check your connection.", true);
+  }
+}
 </script>
-
 </body>
 </html>
