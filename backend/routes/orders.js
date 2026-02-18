@@ -1,216 +1,87 @@
 const express = require('express');
-const Order = require('../models/Order');
-const db = require('../config/db');
-
 const router = express.Router();
+const { protect } = require('../middleware/auth');
+const db = require('../models');
+const { Order } = db;
 
-// Get all orders
-router.get('/', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        res.json(ordersData);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+// POST /api/orders - Create new order (from cart/checkout)
+router.post('/', protect, async (req, res) => {
+  const { items, total, address } = req.body;
+
+  if (!items?.length || !total || !address) {
+    return res.status(400).json({ message: 'Items, total, and address required' });
+  }
+
+  try {
+    const order = await Order.create({
+      userId: req.user.id,
+      items,
+      total,
+      address,
+      status: 'processing',
+      timeline: [
+        { title: 'Order Placed', completed: true, time: new Date() },
+        { title: 'Processing', completed: false },
+        { title: 'Out for Delivery', completed: false },
+        { title: 'Delivered', completed: false },
+      ],
+    });
+
+    // Optional: clear user's cart after order
+    // await db.CartItem.destroy({ where: { cartId: (await db.Cart.findOne({where:{userId:req.user.id}})).id } });
+
+    res.status(201).json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to create order' });
+  }
 });
 
-// Get order by ID
-router.get('/:id', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        const order = ordersData.orders.find(o => o.id === req.params.id);
-
-        if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        res.json(order);
-    } catch (error) {
-        console.error('Error fetching order:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+// GET /api/orders - Get all orders for the user
+router.get('/', protect, async (req, res) => {
+  try {
+    const orders = await Order.findAll({
+      where: { userId: req.user.id },
+      order: [['createdAt', 'DESC']],
+    });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch orders' });
+  }
 });
 
-// Create new order
-router.post('/', (req, res) => {
-    try {
-        const orderData = req.body;
-        const order = new Order(orderData);
+// GET /api/orders/:id - Get single order details
+router.get('/:id', protect, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      where: { id: req.params.id, userId: req.user.id },
+    });
 
-        // Validate order
-        const validation = order.validate();
-        if (!validation.isValid) {
-            return res.status(400).json({
-                message: 'Validation failed',
-                errors: validation.errors
-            });
-        }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
-        // Calculate total if not provided
-        if (!order.total) {
-            order.calculateTotal();
-        }
-
-        // Save order
-        const ordersData = db.getOrders();
-        ordersData.orders.push(order.toJSON());
-
-        if (db.saveOrders(ordersData)) {
-            res.status(201).json({
-                message: 'Order created successfully',
-                order: order.toJSON()
-            });
-        } else {
-            res.status(500).json({ message: 'Failed to save order' });
-        }
-    } catch (error) {
-        console.error('Error creating order:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
-// Update order status
-router.put('/:id/status', (req, res) => {
-    try {
-        const { status } = req.body;
-        const ordersData = db.getOrders();
-        const orderIndex = ordersData.orders.findIndex(o => o.id === req.params.id);
+// PUT /api/orders/:id/cancel - Cancel order (if allowed)
+router.put('/:id/cancel', protect, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      where: { id: req.params.id, userId: req.user.id },
+    });
 
-        if (orderIndex === -1) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        const order = new Order(ordersData.orders[orderIndex]);
-
-        // Update status
-        if (order.updateStatus(status)) {
-            ordersData.orders[orderIndex] = order.toJSON();
-
-            if (db.saveOrders(ordersData)) {
-                res.json({
-                    message: 'Order status updated successfully',
-                    order: order.toJSON()
-                });
-            } else {
-                res.status(500).json({ message: 'Failed to update order status' });
-            }
-        } else {
-            res.status(400).json({ message: 'Invalid status' });
-        }
-    } catch (error) {
-        console.error('Error updating order status:', error);
-        res.status(500).json({ message: 'Internal server error' });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.status !== 'processing') {
+      return res.status(400).json({ message: 'Cannot cancel this order' });
     }
-});
 
-// Get orders by user
-router.get('/user/:userId', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        const userOrders = ordersData.orders.filter(o => o.userId == req.params.userId);
-        res.json({ orders: userOrders });
-    } catch (error) {
-        console.error('Error fetching user orders:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Get orders by status
-router.get('/status/:status', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        const statusOrders = ordersData.orders.filter(o => o.status === req.params.status);
-        res.json({ orders: statusOrders });
-    } catch (error) {
-        console.error('Error fetching orders by status:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Update order
-router.put('/:id', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        const orderIndex = ordersData.orders.findIndex(o => o.id === req.params.id);
-
-        if (orderIndex === -1) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        const updatedData = { ...ordersData.orders[orderIndex], ...req.body };
-        const order = new Order(updatedData);
-
-        // Validate updated order
-        const validation = order.validate();
-        if (!validation.isValid) {
-            return res.status(400).json({
-                message: 'Validation failed',
-                errors: validation.errors
-            });
-        }
-
-        // Update order
-        ordersData.orders[orderIndex] = order.toJSON();
-
-        if (db.saveOrders(ordersData)) {
-            res.json({
-                message: 'Order updated successfully',
-                order: order.toJSON()
-            });
-        } else {
-            res.status(500).json({ message: 'Failed to update order' });
-        }
-    } catch (error) {
-        console.error('Error updating order:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Delete order
-router.delete('/:id', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        const orderIndex = ordersData.orders.findIndex(o => o.id === req.params.id);
-
-        if (orderIndex === -1) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        // Remove order
-        ordersData.orders.splice(orderIndex, 1);
-
-        if (db.saveOrders(ordersData)) {
-            res.json({ message: 'Order deleted successfully' });
-        } else {
-            res.status(500).json({ message: 'Failed to delete order' });
-        }
-    } catch (error) {
-        console.error('Error deleting order:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Get order statistics
-router.get('/stats/overview', (req, res) => {
-    try {
-        const ordersData = db.getOrders();
-        const orders = ordersData.orders;
-
-        const stats = {
-            total: orders.length,
-            pending: orders.filter(o => o.status === 'pending').length,
-            confirmed: orders.filter(o => o.status === 'confirmed').length,
-            shipped: orders.filter(o => o.status === 'shipped').length,
-            delivered: orders.filter(o => o.status === 'delivered').length,
-            totalRevenue: orders.reduce((sum, o) => sum + o.total, 0)
-        };
-
-        res.json(stats);
-    } catch (error) {
-        console.error('Error fetching order stats:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    await order.update({ status: 'cancelled' });
+    res.json({ message: 'Order cancelled', order });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to cancel order' });
+  }
 });
 
 module.exports = router;
