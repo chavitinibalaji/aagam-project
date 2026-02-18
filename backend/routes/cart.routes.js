@@ -1,107 +1,147 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db/connection');
-const authMiddleware = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
+const db = require('../models');
 
-router.get('/', authMiddleware, async (req, res) => {
+const { Cart, CartItem, Product } = db;
+
+// Get or create active cart
+async function getOrCreateCart(userId) {
+  let cart = await Cart.findOne({
+    where: { userId, status: 'active' },
+    include: [{ model: CartItem, include: [Product] }],
+  });
+
+  if (!cart) {
+    cart = await Cart.create({ userId, status: 'active', total: 0 });
+  }
+
+  return cart;
+}
+
+// GET /api/cart
+router.get('/', protect, async (req, res) => {
   try {
-    const [items] = await pool.query(`
-      SELECT ci.id AS cart_item_id, ci.quantity, 
-             p.id, p.name, p.price, p.mrp, p.off, p.weight, p.img_url, p.category
-      FROM cart_items ci
-      JOIN products p ON ci.product_id = p.id
-      WHERE ci.user_id = ?
-    `, [req.userId]);
+    const cart = await getOrCreateCart(req.user.id);
+    let total = 0;
 
-    let subtotal = 0;
-    let mrpDiscount = 0;
-
-    items.forEach(item => {
-      item.itemTotal = item.price * item.quantity;
-      subtotal += item.itemTotal;
-      if (item.mrp) mrpDiscount += (item.mrp - item.price) * item.quantity;
+    const items = cart.CartItems.map(item => {
+      const priceNum = parseFloat(item.Product.price.replace('₹', '')) || 0;
+      const subtotal = priceNum * item.quantity;
+      total += subtotal;
+      return {
+        productId: item.productId,
+        name: item.Product.name,
+        price: item.Product.price,
+        img: item.Product.img,
+        weight: item.Product.weight,
+        quantity: item.quantity,
+        subtotal: subtotal.toFixed(2),
+      };
     });
 
-    const deliveryFee = subtotal >= 500 ? 0 : 30;
-    const handlingFee = 10;
-    const grandTotal = subtotal + deliveryFee + handlingFee;
+    await cart.update({ total });
 
-    res.json({
-      success: true,
-      items,
-      count: items.length,
-      subtotal,
-      deliveryFee,
-      handlingFee,
-      grandTotal,
-      savings: {
-        mrpDiscount,
-        deliverySavings: deliveryFee === 0 ? 30 : 0,
-        handlingSavings: 10,
-        totalSavings: mrpDiscount + (deliveryFee === 0 ? 30 : 0) + 10
-      }
-    });
+    res.json({ cartId: cart.id, items, total: total.toFixed(2), itemCount: items.length });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ message: 'Failed to fetch cart' });
   }
 });
 
-router.post('/', authMiddleware, async (req, res) => {
-  const { product_id, quantity = 1 } = req.body;
-  if (!product_id) return res.status(400).json({ success: false, message: 'Product ID required' });
+// POST /api/cart/add
+router.post('/add', protect, async (req, res) => {
+  const { productId, quantity = 1 } = req.body;
 
   try {
-    const [existing] = await pool.query(
-      'SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?',
-      [req.userId, product_id]
-    );
+    const product = await Product.findByPk(productId);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    if (existing.length > 0) {
-      await pool.query(
-        'UPDATE cart_items SET quantity = quantity + ? WHERE id = ?',
-        [quantity, existing[0].id]
-      );
+    const cart = await getOrCreateCart(req.user.id);
+
+    let cartItem = await CartItem.findOne({ where: { cartId: cart.id, productId } });
+
+    if (cartItem) {
+      cartItem.quantity += Number(quantity);
+      await cartItem.save();
     } else {
-      await pool.query(
-        'INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)',
-        [req.userId, product_id, quantity]
-      );
+      cartItem = await CartItem.create({
+        cartId: cart.id,
+        productId,
+        quantity: Number(quantity),
+      });
     }
 
-    res.json({ success: true, message: 'Item added/updated in cart' });
+    // Recalculate total
+    const items = await CartItem.findAll({ where: { cartId: cart.id }, include: [Product] });
+    let total = 0;
+    items.forEach(i => total += (parseFloat(i.Product.price.replace('₹', '')) || 0) * i.quantity);
+
+    await cart.update({ total });
+
+    res.json({ message: 'Added to cart', cartTotal: total.toFixed(2) });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ message: 'Failed to add item' });
   }
 });
 
-router.put('/:cart_item_id', authMiddleware, async (req, res) => {
-  const { quantity } = req.body;
-  if (!quantity || quantity < 1) return res.status(400).json({ success: false, message: 'Invalid quantity' });
+// PUT /api/cart/update
+router.put('/update', protect, async (req, res) => {
+  const { productId, quantity } = req.body;
 
   try {
-    const [result] = await pool.query(
-      'UPDATE cart_items SET quantity = ? WHERE id = ? AND user_id = ?',
-      [quantity, req.params.cart_item_id, req.userId]
-    );
-    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Cart item not found' });
+    const cart = await getOrCreateCart(req.user.id);
+    const item = await CartItem.findOne({ where: { cartId: cart.id, productId } });
 
-    res.json({ success: true, message: 'Quantity updated' });
+    if (!item) return res.status(404).json({ message: 'Item not in cart' });
+
+    if (quantity <= 0) {
+      await item.destroy();
+    } else {
+      item.quantity = quantity;
+      await item.save();
+    }
+
+    // Recalculate
+    const items = await CartItem.findAll({ where: { cartId: cart.id }, include: [Product] });
+    let total = 0;
+    items.forEach(i => total += (parseFloat(i.Product.price.replace('₹', '')) || 0) * i.quantity);
+
+    await cart.update({ total });
+
+    res.json({ message: quantity > 0 ? 'Updated' : 'Removed', cartTotal: total.toFixed(2) });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ message: 'Failed to update' });
   }
 });
 
-router.delete('/:cart_item_id', authMiddleware, async (req, res) => {
+// DELETE /api/cart/remove/:productId
+router.delete('/remove/:productId', protect, async (req, res) => {
   try {
-    const [result] = await pool.query(
-      'DELETE FROM cart_items WHERE id = ? AND user_id = ?',
-      [req.params.cart_item_id, req.userId]
-    );
-    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Cart item not found' });
+    const cart = await getOrCreateCart(req.user.id);
+    await CartItem.destroy({ where: { cartId: cart.id, productId: req.params.productId } });
 
-    res.json({ success: true, message: 'Item removed from cart' });
+    // Recalculate total...
+    const items = await CartItem.findAll({ where: { cartId: cart.id }, include: [Product] });
+    let total = 0;
+    items.forEach(i => total += (parseFloat(i.Product.price.replace('₹', '')) || 0) * i.quantity);
+
+    await cart.update({ total });
+
+    res.json({ message: 'Removed', cartTotal: total.toFixed(2) });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ message: 'Failed to remove' });
+  }
+});
+
+// DELETE /api/cart/clear
+router.delete('/clear', protect, async (req, res) => {
+  try {
+    const cart = await getOrCreateCart(req.user.id);
+    await CartItem.destroy({ where: { cartId: cart.id } });
+    await cart.update({ total: 0 });
+    res.json({ message: 'Cart cleared' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to clear cart' });
   }
 });
 
