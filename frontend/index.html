@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AAGAM – Groceries in Minutes</title>
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
 body{background:#f6f7fb;color:#111}
-
 /* ────────────────────────────────────────────────
    Responsive Header
 ───────────────────────────────────────────────── */
@@ -26,7 +24,6 @@ body{background:#f6f7fb;color:#111}
   flex-wrap: nowrap;
   min-height: 56px;
 }
-
 .logo {
   font-size: 20px;
   font-weight: 800;
@@ -34,7 +31,6 @@ body{background:#f6f7fb;color:#111}
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 .location-bar {
   display: flex;
   align-items: center;
@@ -52,19 +48,16 @@ body{background:#f6f7fb;color:#111}
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .location-bar:hover,
 .location-bar:active {
   background: #e5e7eb;
 }
-
 .search-container {
   flex: 1 1 auto;
   min-width: 120px;
   max-width: 500px;
   margin: 0 4px;
 }
-
 .search {
   display: flex;
   align-items: center;
@@ -74,14 +67,12 @@ body{background:#f6f7fb;color:#111}
   width: 100%;
   transition: all 0.2s ease;
 }
-
 .search-icon {
   font-size: 18px;
   color: #6b7280;
   margin-right: 8px;
   flex-shrink: 0;
 }
-
 .search input {
   flex: 1;
   min-width: 0;
@@ -92,18 +83,15 @@ body{background:#f6f7fb;color:#111}
   color: #111827;
   padding: 0;
 }
-
 .search input::placeholder {
   color: #9ca3af;
 }
-
 .header-icons {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
 }
-
 .icon-btn {
   position: relative;
   font-size: 24px;
@@ -116,12 +104,10 @@ body{background:#f6f7fb;color:#111}
   transition: background 0.2s;
   touch-action: manipulation;
 }
-
 .icon-btn:hover,
 .icon-btn:active {
   background: #f3f4f6;
 }
-
 .cart-badge {
   position: absolute;
   top: 4px;
@@ -138,7 +124,6 @@ body{background:#f6f7fb;color:#111}
   justify-content: center;
   padding: 0 4px;
 }
-
 /* ────────────────────────────────────────────────
    Media Queries for better mobile experience
 ───────────────────────────────────────────────── */
@@ -152,12 +137,10 @@ body{background:#f6f7fb;color:#111}
   .search input { font-size: 14px; }
   .icon-btn { font-size: 22px; padding: 6px; }
 }
-
 @media (max-width: 480px) {
   .location-bar { display: none; } /* optional – hides location on tiny screens */
   .search-container { min-width: 100px; }
 }
-
 /* ────────────────────────────────────────────────
    Rest of your original styles (banner, products, cart, modal, footer...)
 ───────────────────────────────────────────────── */
@@ -185,7 +168,6 @@ body{background:#f6f7fb;color:#111}
   padding: 0 10px 20px;
   background: #ffffff;
 }
-
 .cat-nav span[data-cat="all"].active ~ #sectionsContainer .products {
   display: flex;
   flex-wrap: nowrap;
@@ -197,7 +179,6 @@ body{background:#f6f7fb;color:#111}
   scrollbar-width: thin;
   scrollbar-color: #ff3366 #f5f5f5;
 }
-
 .products::-webkit-scrollbar {
   height: 8px;
 }
@@ -212,7 +193,6 @@ body{background:#f6f7fb;color:#111}
 .products::-webkit-scrollbar-thumb:hover {
   background: #e62950;
 }
-
 .product {
   position: relative;
   background: #ffffff;
@@ -225,37 +205,31 @@ body{background:#f6f7fb;color:#111}
   flex-direction: column;
   transition: all 0.28s ease;
 }
-
 .product:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 24px rgba(0,0,0,0.14);
 }
-
 .product-img-container {
   position: relative;
   overflow: hidden;
   height: 130px;
   background: #f9f9f9;
 }
-
 .product img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
-
 .product:hover img {
   transform: scale(1.08);
 }
-
 .product-info {
   padding: 10px 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-
 .product-name {
   font-size: 13px;
   font-weight: 600;
@@ -267,13 +241,11 @@ body{background:#f6f7fb;color:#111}
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .product-weight {
   font-size: 11px;
   color: #666;
   margin-bottom: 5px;
 }
-
 .product-price {
   display: flex;
   align-items: center;
@@ -281,19 +253,16 @@ body{background:#f6f7fb;color:#111}
   gap: 6px;
   margin-bottom: 8px;
 }
-
 .product-price .selling {
   font-size: 15px;
   font-weight: 800;
   color: #ff3366;
 }
-
 .product-price .mrp {
   font-size: 12px;
   color: #888;
   text-decoration: line-through;
 }
-
 .product-price .off {
   color: #d32f2f;
   font-size: 11px;
@@ -302,7 +271,6 @@ body{background:#f6f7fb;color:#111}
   padding: 2px 5px;
   border-radius: 4px;
 }
-
 .add-btn,
 .qty-btn {
   width: 100%;
@@ -317,13 +285,11 @@ body{background:#f6f7fb;color:#111}
   transition: all 0.2s ease;
   margin-top: auto;
 }
-
 .add-btn:hover,
 .qty-btn:hover {
   background: #e62950;
   transform: translateY(-1px);
 }
-
 .qty-btn {
   display: flex;
   align-items: center;
@@ -331,7 +297,6 @@ body{background:#f6f7fb;color:#111}
   gap: 10px;
   padding: 8px 10px;
 }
-
 .qty-btn button {
   width: 28px;
   height: 28px;
@@ -343,11 +308,9 @@ body{background:#f6f7fb;color:#111}
   border: none;
   cursor: pointer;
 }
-
 .qty-btn button:hover {
   background: #ffebee;
 }
-
 .no-results {
   padding: 60px 20px;
   text-align: center;
@@ -355,8 +318,6 @@ body{background:#f6f7fb;color:#111}
   font-size: 16px;
   grid-column: 1 / -1;
 }
-
-
 /* Detail Modal */
   .details-overlay {
     position:fixed; inset:0; background:rgba(0,0,0,.55); display:none;
@@ -460,29 +421,34 @@ body{background:#f6f7fb;color:#111}
 .footer .social img{width:48px;height:48px;border-radius:50%;transition:transform 0.3s;}
 .footer .social img:hover{transform:scale(1.1);}
 .footer .copyright{margin-top:30px;font-size:12px;color:#888;}
+.stock.coming-soon {
+  background: #fef3c7;
+  color: #d97706;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-block;
+  margin: 6px 0;
+}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="logo">AAGAM</div>
-
   <div class="location-bar" onclick="window.location.href='location.html'">
-    📍 <span id="locationText">Select Location</span>
+    📍 <span id="locationText">Visakhapatnam</span>
   </div>
-
   <div class="search-container">
     <div class="search">
       <span class="search-icon">🔍</span>
-      <input 
-        id="searchInput" 
-        onkeyup="handleSearch()" 
-        placeholder="Search groceries, fruits..." 
+      <input
+        id="searchInput"
+        onkeyup="handleSearch()"
+        placeholder="Search groceries, fruits..."
         autocomplete="off"
       />
     </div>
   </div>
-
   <div class="header-icons">
     <button class="icon-btn" aria-label="Profile" onclick="openProfile()">👤</button>
     <button class="icon-btn" aria-label="Cart" onclick="openCart()">
@@ -491,7 +457,6 @@ body{background:#f6f7fb;color:#111}
     </button>
   </div>
 </div>
-
 <div class="cat-nav">
   <span class="active" data-cat="all">All</span>
   <span data-cat="grocery">Grocery</span>
@@ -503,7 +468,6 @@ body{background:#f6f7fb;color:#111}
   <span data-cat="toys">Toys</span>
   <span data-cat="student">Student needs</span>
 </div>
-
 <div class="banner-section visible" id="bannerSection">
   <div class="banner-carousel" id="bannerCarousel">
     <div class="banner-slide active"><img src="https://img.freepik.com/free-vector/flat-design-grocery-store-sale-banner_23-2151074240.jpg" alt="Grocery Sale"></div>
@@ -514,13 +478,10 @@ body{background:#f6f7fb;color:#111}
   <div class="banner-next" onclick="nextSlide()">❯</div>
   <div class="banner-dots" id="bannerDots"></div>
 </div>
-
 <div id="sectionsContainer"></div>
-
 <div id="noResults" class="no-results" style="display:none;">
   No products found matching "<strong id="searchTerm"></strong>"
 </div>
-
 <!-- Details Modal -->
 <div class="details-overlay" id="detailsOverlay" onclick="closeDetails()">
   <div class="details-modal" onclick="event.stopPropagation()">
@@ -575,7 +536,6 @@ body{background:#f6f7fb;color:#111}
     </div>
   </div>
 </div>
-
 <!-- Cart Popup (your exact code + navigation added to button) -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 <div class="cart-popup" id="cartPopup">
@@ -594,7 +554,6 @@ body{background:#f6f7fb;color:#111}
     </button>
   </div>
 </div>
-
 <!-- Footer with Contact Info -->
 <footer class="footer">
   <div class="footer-content">
@@ -605,7 +564,7 @@ body{background:#f6f7fb;color:#111}
       WhatsApp: <a href="https://wa.me/918179315170" target="_blank" style="color:#00b761;text-decoration:none;">+91 xxxxx xxxxx</a><br>
       Address: AAGAM Groceries, Visakhapatnam, Andhra Pradesh, India
     </p>
-   
+  
     <div class="social">
       <a href="https://www.facebook.com/share/1Cuq8v8JAL/?mibextid=wwXIfr" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
@@ -617,29 +576,46 @@ body{background:#f6f7fb;color:#111}
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
       </a>
     </div>
-   
+  
     <p class="copyright">
       © 2026 AAGAM – Groceries in Minutes. All rights reserved.
     </p>
   </div>
 </footer>
-
-
 <script>
 // ────────────────────────────────────────────────
-// JavaScript (with cart badge update added)
+ // JavaScript (with cart badge update added and coming soon logic)
 // ────────────────────────────────────────────────
 let cart = [], activeCategory = "all";
 let currentProduct = {};
 let searchQuery = "";
-
+const comingSoonMode = true; // Set to false when more products are available
 const savedLocation = localStorage.getItem("deliveryLocation");
 if (savedLocation) {
   document.getElementById("locationText").innerText = savedLocation;
+} else {
+  document.getElementById("locationText").innerText = "Visakhapatnam"; // Default to user's location
 }
-
-// New unlimited products (copy-paste more of these)
+// Updated dairy products with the four variants
 let categorySections = [
+{
+    title: "Dairy",
+    products: [
+      {name:"Aagam Fresh Buffalo milk", price:"₹38", weight:"500 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/ChatGPT%20Image%20Jan%2029%2C%202026%2C%2005_11_11%20PM.png", cat:"dairy", stock:50},
+      {name:"Aagam Fresh Buffalo Milk", price:"₹74", weight:"1000 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/ChatGPT%20Image%20Jan%2029%2C%202026%2C%2005_11_11%20PM.png", cat:"dairy", stock:100},
+      {name:"Aagam Fresh Cow milk", price:"₹54", weight:"500 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/ChatGPT%20Image%20Jan%2029%2C%202026%2C%2005_11_11%20PM.png", cat:"dairy", stock:50},
+      {name:"Aagam Fresh Cow Milk", price:"₹29", weight:"1000 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/ChatGPT%20Image%20Jan%2029%2C%202026%2C%2005_11_11%20PM.png", cat:"dairy", stock:100},
+      {name:"Amul Butter", price:"₹48", mrp:"₹52", off:"₹4 OFF", weight:"100 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Butter.jpg", cat:"dairy"},
+      {name:"Milky Mist Paneer", price:"₹91", mrp:"₹130", off:"₹39 OFF", weight:"200 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Milky%20Mist%20Paneer.jpg", cat:"dairy"},
+      {name:"Amul Cheese Slices", price:"₹120", weight:"200 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Cheese%20Slices.jpg", cat:"dairy"},
+      {name:"Heritage Dairy Curd", price:"₹35", weight:"400 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/heritage%20Dairy%20Curd.jpg", cat:"dairy"},
+      {name:"Amul Lassi", price:"₹25", weight:"200 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Lassi.jpg", cat:"dairy"},
+      {name:"Britannia Cheese Block", price:"₹199", weight:"200 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Britannia%20Cheese%20Block.jpg", cat:"dairy"},
+      {name:"Amul Fresh Cream", price:"₹60", weight:"200 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Fresh%20Cream.jpg", cat:"dairy"},
+      {name:"Nandini Ghee", price:"₹520", weight:"1 L", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Nandini%20Ghee.jpg", cat:"dairy"},
+      {name:"Amul Masti Buttermilk", price:"₹20", weight:"200 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Masti%20Buttermilk.jpg", cat:"dairy"}
+    ]
+  },
   {
     title: "Grocery",
     products: [
@@ -688,21 +664,7 @@ let categorySections = [
       {name:"Lady Finger", price:"₹40", weight:"250 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/lady%20finger.jpeg", cat:"veg"}
     ]
   },
-  {
-    title: "Dairy",
-    products: [
-      {name:"Aagam Fresh Milk", price:"₹40", weight:"500 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/ChatGPT%20Image%20Jan%2029%2C%202026%2C%2005_11_11%20PM.png", cat:"dairy"},
-      {name:"Amul Butter", price:"₹48", mrp:"₹52", off:"₹4 OFF", weight:"100 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Butter.jpg", cat:"dairy"},
-      {name:"Milky Mist Paneer", price:"₹91", mrp:"₹130", off:"₹39 OFF", weight:"200 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Milky%20Mist%20Paneer.jpg", cat:"dairy"},
-      {name:"Amul Cheese Slices", price:"₹120", weight:"200 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Cheese%20Slices.jpg", cat:"dairy"},
-      {name:"Heritage Dairy Curd", price:"₹35", weight:"400 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/heritage%20Dairy%20Curd.jpg", cat:"dairy"},
-      {name:"Amul Lassi", price:"₹25", weight:"200 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Lassi.jpg", cat:"dairy"},
-      {name:"Britannia Cheese Block", price:"₹199", weight:"200 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Britannia%20Cheese%20Block.jpg", cat:"dairy"},
-      {name:"Amul Fresh Cream", price:"₹60", weight:"200 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Fresh%20Cream.jpg", cat:"dairy"},
-      {name:"Nandini Ghee", price:"₹520", weight:"1 L", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Nandini%20Ghee.jpg", cat:"dairy"},
-      {name:"Amul Masti Buttermilk", price:"₹20", weight:"200 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Amul%20Masti%20Buttermilk.jpg", cat:"dairy"}
-    ]
-  },
+ 
   {
     title: "Snacks",
     products: [
@@ -731,7 +693,7 @@ let categorySections = [
       {name:"Fair & Lovely Cream", price:"₹99", weight:"50 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Fair%20%26%20Lovely%20Cream.jpeg", cat:"beauty"},
       {name:"Lakme Eye Liner", price:"₹220", weight:"1.2 ml", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/Lakme%20Eye%20Liner.jpeg", cat:"beauty"},
       {name:"Mysore sandal soap", price:"₹80", weight:"150 g", img:"https://raw.github.com/chavitinibalaji/aagam-assets/main/mysore%20sandal.jpeg", cat:"beauty"}
-     
+    
     ]
   },
   {
@@ -775,16 +737,46 @@ const normalizedCategories = categorySections.map(s => ({
       "Dietary Preference": "Veg",
       "Good For": p.cat === "fruit" ? "Immunity" : "Daily Use"
     },
-    deliveryTime: "6 mins",
+    deliveryTime: "10 mins",
     tags: p.off ? ["Best Price"] : []
   }))
 }));
 const allProducts = normalizedCategories.flatMap(s => s.products);
-// ── Render Functions (unchanged) ─────────────────────────────
+// ── Render Functions (updated for coming soon and stock) ─────────────────────────────
 function renderProductCard(container, p) {
+  const isActive = p.name.includes("Aagam Fresh");
   const inCart = cart.find(i => i.name === p.name);
+  const cartQty = inCart ? inCart.qty : 0;
+  const availableStock = p.stock ? p.stock - cartQty : Infinity;
+  let stockDisplay = '';
+  let buttonHTML = '';
+  let onclick = "openDetailsByName('" + p.name.replace(/'/g, "\\'") + "')";
+  if (comingSoonMode && !isActive) {
+    onclick = '';
+    stockDisplay = '<div class="stock coming-soon">Coming Soon</div>';
+    buttonHTML = '<button class="add-btn" style="background:#ccc;cursor:not-allowed;">Coming Soon</button>';
+  } else {
+    if (availableStock <= 0) {
+      stockDisplay = '<div class="stock low" style="color:#d32f2f;font-size:12px;margin-bottom:6px;">Out of stock</div>';
+      buttonHTML = '<button class="add-btn" style="background:#ccc;cursor:not-allowed;">Out of Stock</button>';
+    } else if (availableStock <= 5) {
+      stockDisplay = `<div class="stock low" style="color:#d32f2f;font-size:12px;margin-bottom:6px;">Only ${availableStock} left</div>`;
+    } else {
+      stockDisplay = '<div class="stock" style="color:#00b761;font-size:12px;margin-bottom:6px;">In stock</div>';
+    }
+
+    if (availableStock > 0) {
+      buttonHTML = inCart ? `
+        <div class="qty-btn" onclick="event.stopPropagation()">
+          <button onclick="updateQuantity('${p.name.replace(/'/g, "\\'")}', -1);event.stopPropagation()">–</button>
+          <span>${inCart.qty}</span>
+          <button onclick="updateQuantity('${p.name.replace(/'/g, "\\'")}', 1);event.stopPropagation()">+</button>
+        </div>` : `
+        <button class="add-btn" onclick="addToCart('${p.name.replace(/'/g, "\\'")}','${p.price}','${p.img}');event.stopPropagation()">ADD</button>`;
+    }
+  }
   container.innerHTML += `
-    <div class="product" onclick="openDetailsByName('${p.name.replace(/'/g, "\\'")}')">
+    <div class="product" style="${comingSoonMode && !isActive ? 'opacity:0.7;' : ''}" onclick="${onclick}">
       <div class="product-img-container"><img src="${p.img}"></div>
       <div class="product-info">
         <div class="product-name">${p.name}</div>
@@ -794,17 +786,13 @@ function renderProductCard(container, p) {
           ${p.mrp ? `<span class="mrp">${p.mrp}</span><span class="off">${p.off||''}</span>` : ''}
         </div>
         <div class="time">${p.deliveryTime}</div>
+        ${stockDisplay}
         ${p.tags?.length ? `<span class="tag">${p.tags.join(' ')}</span>` : ''}
-        ${inCart ? `
-          <div class="qty-btn" onclick="event.stopPropagation()">
-            <button onclick="updateQuantity('${p.name.replace(/'/g, "\\'")}', -1);event.stopPropagation()">–</button>
-            <span>${inCart.qty}</span>
-            <button onclick="updateQuantity('${p.name.replace(/'/g, "\\'")}', 1);event.stopPropagation()">+</button>
-          </div>` : `
-          <button class="add-btn" onclick="addToCart('${p.name.replace(/'/g, "\\'")}','${p.price}','${p.img}');event.stopPropagation()">ADD</button>`}
+        ${buttonHTML}
       </div>
     </div>`;
 }
+// ── Rest of the script remains the same ─────────────────────────────
 function renderSections() {
   const container = document.getElementById('sectionsContainer');
   container.innerHTML = '';
@@ -830,17 +818,24 @@ function renderSections() {
   });
   if (!hasResults && searchQuery) {
     document.getElementById('searchTerm').textContent = searchQuery;
-    noResults.style.display = 'block';
+    document.getElementById('noResults').style.display = 'block';
   }
 }
-
 function handleSearch() {
   searchQuery = document.getElementById('searchInput').value.trim();
   renderSections();
 }
-
 function addToCart(name, price, img) {
+  if (comingSoonMode && !name.includes("Aagam Fresh")) {
+    alert("This product is coming soon! Currently only Aagam Fresh Milk products are available.");
+    return;
+  }
   let item = cart.find(i => i.name === name);
+  const p = allProducts.find(x => x.name === name);
+  if (p.stock && item && item.qty + 1 > p.stock) {
+    alert(`Sorry, only ${p.stock} units available.`);
+    return;
+  }
   if (item) item.qty += 1;
   else cart.push({name, price, img, qty: 1});
   renderSections();
@@ -848,22 +843,27 @@ function addToCart(name, price, img) {
   updateCartBadge();
   openCart();
 }
-
 function addToCartFromDetails() {
   addToCart(currentProduct.name, currentProduct.price, currentProduct.img);
 }
-
 function updateQuantity(name, delta) {
   let item = cart.find(i => i.name === name);
   if (item) {
-    item.qty += delta;
-    if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
+    const p = allProducts.find(x => x.name === name);
+    const newQty = item.qty + delta;
+    if (newQty <= 0) {
+      cart = cart.filter(i => i.name !== name);
+    } else if (p.stock && newQty > p.stock) {
+      alert(`Sorry, only ${p.stock} units available.`);
+      return;
+    } else {
+      item.qty = newQty;
+    }
     renderSections();
     renderCart();
     updateCartBadge();
   }
 }
-
 function updateCartBadge() {
   const countEl = document.getElementById('cartCount');
   const totalItems = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
@@ -872,7 +872,6 @@ function updateCartBadge() {
     countEl.style.display = totalItems > 0 ? 'flex' : 'none';
   }
 }
-
 function renderCart() {
   let container = document.getElementById('cartItems');
   container.innerHTML = "";
@@ -899,7 +898,6 @@ function renderCart() {
   if (cart.length === 0) container.innerHTML = '<p style="text-align:center;color:#888;padding:40px;">Your cart is empty</p>';
   updateCartBadge();
 }
-
 // ── Detail Modal Logic (no image added) ─────────────────────
 function openDetailsByName(name) {
   const p = allProducts.find(x => x.name === name);
@@ -950,7 +948,7 @@ function loadSimilarProducts(p) {
 }
 function scrollSimilar(dir) {
   document.getElementById('similarProducts').scrollLeft += dir * 160;
-  
+ 
 }
 // ── Quantity & Add Logic (unchanged) ────────────────────────
 function updateDetailControls() {
@@ -994,12 +992,16 @@ function handleAddToCartFromDetails() {
     }, 1500);
   }, 500);
 }
-
+function refreshAfterCartChange() {
+  renderSections();
+  renderCart();
+  updateCartBadge();
+  loadSimilarProducts(currentProduct); // Refresh similar too if needed
+}
 function closeDetails() { document.getElementById('detailsOverlay').style.display = 'none'; }
 function openCart() { document.getElementById('cartOverlay').style.display="block"; document.getElementById('cartPopup').classList.add("active"); }
 function closeCart() { document.getElementById('cartOverlay').style.display="none"; document.getElementById('cartPopup').classList.remove("active"); }
 function openProfile() { window.location.href = 'profile.html'; }
-
 // Category navigation
 document.querySelectorAll(".cat-nav span").forEach(c => {
   c.onclick = () => {
@@ -1010,17 +1012,20 @@ document.querySelectorAll(".cat-nav span").forEach(c => {
     renderSections();
   };
 });
-
 // Banner carousel (simplified)
 let currentSlide = 0;
 const slides = document.querySelectorAll('.banner-slide');
+function prevSlide() {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+  slides[currentSlide].classList.add('active');
+}
 function nextSlide() {
   slides[currentSlide].classList.remove('active');
   currentSlide = (currentSlide + 1) % slides.length;
   slides[currentSlide].classList.add('active');
 }
 setInterval(nextSlide, 5000);
-
 // Initial render
 renderSections();
 renderCart();
